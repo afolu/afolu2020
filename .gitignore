@@ -130,6 +130,6 @@ dmypy.json
 
 # folders
 
-.data
-.config
-.results
+data
+config
+results
