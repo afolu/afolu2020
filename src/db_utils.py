@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import psycopg2
 from configparser import ConfigParser
 
@@ -40,12 +42,12 @@ def pg_connection(**kwargs):
 
     try:
         # read connection parameters
-        if kwargs is None:
+        if not kwargs:
             params = pg_config(**kwargs)
         else:
             params = kwargs
         # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
+        # print('Connecting to the PostgreSQL database...')
         conn = psycopg2.connect(**params)
 
     except (Exception, psycopg2.DatabaseError) as error:
