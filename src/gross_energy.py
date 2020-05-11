@@ -218,7 +218,7 @@ class GrossEnergy(object):
         # TODO preguntar si la leche y la grasa tienen límites, revisar si el % de leche entra completo
         dep = self.d_ep()
         rem = self.rem_rel(dep)
-        el = (self.milk / 365) * (1.47 + 0.4 * self.grease / 100) / rem / (dep / 100)
+        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / rem / (dep / 100)
         return el
 
     def milk_energy(self):
