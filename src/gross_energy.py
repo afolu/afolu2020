@@ -5,7 +5,7 @@ from db_utils import pg_connection
 
 class GrossEnergy(object):
     def __init__(self, ca_id=1, coe_act_id=2,  ta=13, pf=100, pc=0, vp_id=1, vs_id=1, weight=500,
-                 adult_w=550, cp_id=2, gan=0, milk=0, grease=0, **kwargs):
+                 adult_w=550, cp_id=2, gan=0, milk=0, grease=0, ht=0, **kwargs):
         """
         :param at: Animal tipo. Animal type. ID animal type according to the DB.
                 E.g. 1. Vacas de alta producción
@@ -25,6 +25,7 @@ class GrossEnergy(object):
         :param gan: Ganancia de peso del animal
         :param milk: Cantidad de leche en litros por año (l año ** -1)
         :param grease: Porcentaje de grasa en la leche (%)
+        :param ht: Horas de trabajo del animal
         """
         self.ca_id = ca_id
         self.ta = ta
@@ -42,6 +43,7 @@ class GrossEnergy(object):
         self.milk = milk
         self.grease = grease
         self.ac_id = coe_act_id
+        self.ht = ht
 
     def get_from_ca_table(self):
         """
@@ -228,6 +230,17 @@ class GrossEnergy(object):
         """
         me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 10 ** -3
         return me
+
+    def work(self):
+        """
+        Requerimiento de energía bruta para el trabajo
+        :return: ew
+        """
+        a1, tc = self.get_from_ca_table()
+        dep = self.d_ep()
+        rem = self.rem_rel(dep)
+        ew = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * 0.1 * self.ht / rem / (dep / 100)
+        return ew
 
 
 def main():
