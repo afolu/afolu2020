@@ -4,8 +4,8 @@ from db_utils import pg_connection
 
 
 class GrossEnergy(object):
-    def __init__(self, ca_id=1, coe_act_id=2,  ta=13, pf=100, pc=0, vp_id=1, vs_id=1, weight=500,
-                 adult_w=550, cp_id=2, gan=0, milk=0, grease=0, ht=0, **kwargs):
+    def __init__(self, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
+                 adult_w=550, cp_id=2, gan=0, milk=0, grease=0, ht=0, cs_id=1, **kwargs):
         """
         :param at: Animal tipo. Animal type. ID animal type according to the DB.
                 E.g. 1. Vacas de alta producción
@@ -26,14 +26,15 @@ class GrossEnergy(object):
         :param milk: Cantidad de leche en litros por año (l año ** -1)
         :param grease: Porcentaje de grasa en la leche (%)
         :param ht: Horas de trabajo del animal
+        :param cs_id: Indice de condicion sexual
         """
         self.ca_id = ca_id
         self.ta = ta
         assert -10 <= self.ta <= 50.0, "Verifique la temperatura ambiente. El rango permitido es entre -10 y 50 °C "
         self.pf = pf
         assert 0 <= self.pf <= 100, "Verifique el porcentaje de forraje. El rango permitido es entre 0 y 100%"
-        self.pc = pc
-        assert 0 <= self.pc <= 100, "Verifique el porcentaje de forraje. El rango permitido es entre 0 y 100%"
+        self.ps = ps
+        assert 0 <= self.ps <= 100, "Verifique el porcentaje de Suplemento. El rango permitido es entre 0 y 100%"
         self.vp_id = vp_id
         self.vs_id = vs_id
         self.weight = weight
@@ -44,6 +45,7 @@ class GrossEnergy(object):
         self.grease = grease
         self.ac_id = coe_act_id
         self.ht = ht
+        self.id_cs = cs_id
 
     def get_from_ca_table(self):
         """
@@ -82,19 +84,21 @@ class GrossEnergy(object):
             cp = res[0][0]
         return cp
 
-    def get_from_grass_type(self):
+    @staticmethod
+    def get_from_grass_type(id_):
         conn = pg_connection()
         with conn as connection:
             query = """
-                    SELECT digestibilidad_dieta 
+                    SELECT em_rumiantes, energia_bruta_pasto 
                     FROM variedad_pasto
                     WHERE id_variedad = '{0}'
-                    """.format(self.vp_id)
+                    """.format(id_)
             cur = connection.cursor()
             cur.execute(query)
             res = cur.fetchall()
-            dd = res[0][0]
-        return dd
+            edr = res[0][0]
+            ebp = res[0][1]
+        return edr, ebp
 
     def get_from_ac_table(self):
         """
@@ -125,7 +129,7 @@ class GrossEnergy(object):
             SELECT coe_cond_sexual 
             FROM condicion_sexual
             WHERE id_cond_sexual = '{0}'
-            """.format(self.vs_id)
+            """.format(self.id_cs)
             cur = connection.cursor()
             cur.execute(query)
             res = cur.fetchall()
@@ -134,13 +138,13 @@ class GrossEnergy(object):
 
     def d_ep(self):
         """
-
-        :return: Digestibilidad de la dieta - dep
+        Digestibilidad de la dieta - dep
+        :return:
         """
-        assert self.pc + self.pf == 100, "La suma de los porcentajes de forraje y complemento debe ser igual a 100%"
-        de_f = self.get_from_grass_type()
-        de_c = self.get_from_grass_type()
-        dep = de_f * self.pf / 100 + de_c * self.pc / 100
+        assert self.ps + self.pf == 100, "La suma de los porcentajes de forraje y complemento debe ser igual a 100%"
+        de_f, epf = self.get_from_grass_type(self.vp_id)
+        de_s, eps = self.get_from_grass_type(self.vs_id)
+        dep = (de_f * 100 / epf) * self.pf / 100 + (de_s * 100 / eps) * self.ps / 100
         return dep
 
     @staticmethod
@@ -189,6 +193,28 @@ class GrossEnergy(object):
         em = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * ca / rem / (dep / 100)
         return em
 
+    def breastfeeding(self):
+        """
+        Cálculo del requerimiento de energía bruta para lactancia o producción de leche GEl o el
+        :return: el (Mj día -1)
+        """
+        # TODO preguntar si la leche y la grasa tienen límites, revisar si el % de leche entra completo
+        dep = self.d_ep()
+        rem = self.rem_rel(dep)
+        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / rem / (dep / 100)
+        return el
+
+    def work(self):
+        """
+        Requerimiento de energía bruta para el trabajo
+        :return: ew
+        """
+        a1, tc = self.get_from_ca_table()
+        dep = self.d_ep()
+        rem = self.rem_rel(dep)
+        ew = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * 0.1 * self.ht / rem / (dep / 100)
+        return ew
+
     def pregnancy(self):
         """
         Requerimiento de energía bruta para gestación o preñez
@@ -212,17 +238,6 @@ class GrossEnergy(object):
         eg = (22.02 * (self.weight / (fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097 / reg / (dep / 100)
         return eg
 
-    def breastfeeding(self):
-        """
-        Cálculo del requerimiento de energía bruta para lactancia o producción de leche GEl o el
-        :return: el (Mj día -1)
-        """
-        # TODO preguntar si la leche y la grasa tienen límites, revisar si el % de leche entra completo
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / rem / (dep / 100)
-        return el
-
     def milk_energy(self):
         """
         Aporte de energía bruta de la leche consumida por el ternero.
@@ -230,17 +245,6 @@ class GrossEnergy(object):
         """
         me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 10 ** -3
         return me
-
-    def work(self):
-        """
-        Requerimiento de energía bruta para el trabajo
-        :return: ew
-        """
-        a1, tc = self.get_from_ca_table()
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        ew = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * 0.1 * self.ht / rem / (dep / 100)
-        return ew
 
 
 def main():
@@ -251,7 +255,8 @@ def main():
     milk = ge.breastfeeding()
     grow = ge.grow()
     breastfeeding = ge.breastfeeding()
-    print(me + ae + preg + milk + grow + breastfeeding)
+    work = ge.work()
+    print(me + ae + preg + milk + grow + breastfeeding + work)
 
 
 if __name__ == '__main__':
