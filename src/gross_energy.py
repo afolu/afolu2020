@@ -4,10 +4,10 @@ import db_utils
 
 
 class GrossEnergy(object):
-    def __init__(self, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
+    def __init__(self, at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
                  adult_w=550, cp_id=2, gan=0, milk=0, grease=0, ht=0, cs_id=1, **kwargs):
         """
-        :param at: Animal tipo. Animal type. ID animal type according to the DB.
+        :param at_id: Animal tipo. Animal type. ID animal type according to the DB.
                 E.g. 1. Vacas de alta producción
         :param ca_id: Indice categoria animal. Animal Category. ID Animal Category according to the DB
                 E.g. 1. Bovino tipo lechero
@@ -28,7 +28,10 @@ class GrossEnergy(object):
         :param ht: Horas de trabajo del animal
         :param cs_id: Indice de condicion sexual
         """
+        self.at_id = at_id
         self.ca_id = ca_id
+        if self.at_id == 1:
+            assert self.at_id == 1 & self.ca_id == 1, "La categoria animal debe ser Bos Taurus"
         self.ta = ta
         assert -10 <= self.ta <= 50.0, "Verifique la temperatura ambiente. El rango permitido es entre -10 y 50 °C "
         self.pf = pf
@@ -46,7 +49,7 @@ class GrossEnergy(object):
         self.ac_id = coe_act_id
         self.ht = ht
         self.id_cs = cs_id
-        self.a1, self.tc, self.rcms = db_utils.get_from_ca_table(self.ca_id)
+        self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
         self.de_f, self.ebf = db_utils.get_from_grass_type(self.vp_id)
         self.de_s, self.ebs = db_utils.get_from_grass_type(self.vs_id)
@@ -148,7 +151,7 @@ class GrossEnergy(object):
 
 
 def main():
-    ge = GrossEnergy(milk=3660, grease=3.2)
+    ge = GrossEnergy(at_id=1, ca_id=2, milk=3660, grease=3.2)
     me = ge.maintenance()
     ae = ge.activity()
     preg = ge.pregnancy()
