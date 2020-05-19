@@ -13,7 +13,32 @@ class FactorEF(GrossEnergy):
         super().__init__(**kwargs)
         self.ym_id = ym_id
         self.ym = db_utils.get_from_ym_table(self.ym_id)
-        self.fmc = self.fcm()
+        self.fcm = self.fcm()
+        if self.milk / 365 >= 11.5:
+            self.ajl = 1.7
+        else:
+            self.ajl = 0
+        self.eqsbw = self.eqsbw()
+
+    def eqsbw(self):
+        """
+        Peso equivalente vacío
+        :return:
+        """
+        pev = (self.weight * 0.96) * 400 / (self.adult_w * 0.96)
+        return pev
+
+    def bfaf(self):
+        """
+        Factor de ajuste por grasa corporal
+        :return:
+        """
+        if self.weight > 350:
+            fagc = 0.7714 + (0.00196 * (self.weight * 0.96 * self.eqsbw) / (self.adult_w * 0.96)) - \
+                   (0.000000371 * (self.weight * 0.96 * self.eqsbw) / ((self.adult_w * 0.96) ** 2))
+        else:
+            fagc = 1
+        return fagc
 
     def gepd(self):
         """
@@ -22,6 +47,14 @@ class FactorEF(GrossEnergy):
         """
         ebpd = self.ebf * self.pf / 100 + self.ebs * self.ps / 100
         return ebpd
+
+    def fcm(self):
+        """
+        Leche corregida por grasa al 3.5% (kg/día)
+        :return: f_cm
+        """
+        f_cm = 0.4324 * (self.milk / 365) + 16.216 * (self.milk / 365) * (self.grease / 100)
+        return f_cm
 
     def gbvap(self):
         """
@@ -36,8 +69,7 @@ class FactorEF(GrossEnergy):
         assert 2.0 <= self.grease <= 6.0, "El contenido de grasa en la leche puede ir desde el 2.0 % hasta el 6.0%"
         assert self.ca_id == 1, "La categoria de ganado bovino vacas de alta producción solo puede estar conformado " \
                                 "animales tipo Bos Taurus (1)"
-        gbvap_en = self.maintenance() + self.activity() + self.breastfeeding() + \
-                   self.pregnancy() + self.work()
+        gbvap_en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
         ef = (gbvap_en * (self.ym / 100) * 365) / 55.65
         return ef, gbvap_en
 
@@ -46,8 +78,7 @@ class FactorEF(GrossEnergy):
         3A1aii Ganado Bovino Vacas de Baja Producción
         :return: factor de emisión para la categoria 3A2aii
         """
-        gbvbp_en = self.maintenance() + self.activity() + self.breastfeeding() + \
-                   self.pregnancy() + self.work()
+        gbvbp_en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
         ef = (gbvbp_en * (self.ym / 100) * 365) / 55.65
         return ef, gbvbp_en
 
@@ -74,8 +105,7 @@ class FactorEF(GrossEnergy):
         3A1av Ganado Bovino Terneros pre-destetos
         :return:
         """
-        gbtpd_en = self.maintenance() + self.activity() + self.grow() + self.work() - \
-                   self.milk()
+        gbtpd_en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk()
         ef = (gbtpd_en * (self.ym / 100) * 273.75) / 55.65
         return ef, gbtpd_en
 
@@ -134,30 +164,90 @@ class FactorEF(GrossEnergy):
         cs = c_ms * self.ps / 100
         return cs
 
-    def fcm(self):
-        """
-        Leche corregida por grasa al 3.5% (kg/día)
-        :return: f_cm
-        """
-        f_cm = 0.4324 * (self.milk / 365) + 16.216 * (self.milk / 365 * self.grease / 100)
-        return f_cm
-
     def cpmsgbvap(self):
         """
         Consumo potencial de materia seca para 3A1ai Ganado Bovino Vacas de Alta Producción
         :return: cpms (kg día -1 )
         """
-        cpms = (0.0185 * self.weight + 0.305 * self.fmc) * (1 - (self.rcms / 100) *
-                                                            (self.tc - self.ta))
+        cpms = (0.0185 * self.weight + 0.305 * self.fcm) * (1 - (self.rcms / 100) *
+                                                            (self.ta - self.tc))
+        return cpms
+
+    def cpmsgbvbp(self):
+        """
+        Consumo potencial de materia seca para 3A1ai Ganado Bovino Vacas de Baja Producción
+        :return: cpms (kg día -1 )
+        """
+        cpms = ((self.weight ** 0.75) * (0.14652 * (self.maintenance() / 4.184)) -
+                (0.0517 * (self.maintenance() / 4.184) ** 2) - 0.0074 + (0.305 * self.fcm) + self.ajl) * \
+               (1 - (self.rcms / 100) * (self.ta - self.tc))
+        return cpms
+
+    def cpmsgbpc(self):
+        """
+        Consumo potencial de materia seca para 3A1aiii Ganado Bovino Vacas para Producción de Carne
+        :return: cpms (kg día -1 )
+        """
+
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.04997 * ((self.maintenance() / 4.184) ** 2) + 0.04631) /
+                (self.maintenance() / 4.184)) * (1 - (self.rcms / 100) * (self.ta - self.tc)) + \
+               (0.2 * (self.milk / 365))
+        return cpms
+
+    def cpmsgbtfr(self):
+        """
+        Consumo potencial de materia seca para 3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
+        :return: cpms (kg día -1 )
+        """
+        cpms = (3.83 + 0.0143 * (self.weight * 0.96)) * (1 - (self.rcms / 100) * (self.ta - self.tc))
+        return cpms
+
+    def cpmsgbtp(self):
+        """
+        Consumo potencial de materia seca para 3A1av Ganado Bovino Terneros pre-destetos
+        :return: cpms (kg día -1 )
+        """
+
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
+                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.1128) *
+                                                            self.bfaf() * self.bi *
+                                                            (1 - (self.rcms / 100) * (self.ta - self.tc)))))
+        return cpms
+
+    def cpmsgbtr(self):
+        """
+        Consumo potencial de materia seca para 3A1avi Ganado Bovino Terneras de remplazo
+        :return: cpms (kg día -1 )
+        """
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
+                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.0869) /
+                                                            (self.maintenance() / 4.184)) * self.bfaf() * self.bi *
+                                                  (1 - (self.rcms / 100) * (self.ta - self.tc))))
+        return cpms
+
+    def cpmsgbge(self):
+        """
+        Consumo potencial de materia seca para 3A1avii Ganado Bovino Ganado de engorde
+        :return: cpms (kg día -1 )
+        """
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
+                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.0869) /
+                                                            (self.maintenance() / 4.184)) * self.bfaf() * self.bi *
+                                                  (1 - (self.rcms / 100) * (self.ta - self.tc))))
         return cpms
 
 
 def main():
-    ef = FactorEF(weight=500, ta=13, milk=3660, grease=3.2, ca_id=1)
+    ef = FactorEF(at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
+                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=0, cs_id=1,  ym_id=4)
     fe, eg = ef.gbvap()
     cms = ef.cms(eg)
-    print(fe, eg, cms)
-    print(ef.cpmsgbvap())
+    print(f"factor de emision: {round(fe, 2)}")
+    print(f"Consumo de energia bruta: {round(eg,2)}")
+    print(f"Consumo de materia seca (calculado a través del consumo de energía): {round(cms, 2)}")
+    print(f"Consumo de forraje: {round(1 * cms, 2) }")
+    print(f"Consumo de Concentrado: {round(0 * cms, 2)}")
+    print(f"consumo potencial de materia seca: {round(ef.cpmsgbvap(), 2)}")
 
 
 if __name__ == "__main__":
