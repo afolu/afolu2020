@@ -51,13 +51,14 @@ class GrossEnergy(object):
         self.id_cs = cs_id
         self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
-        self.de_f, self.ebf = db_utils.get_from_grass_type(self.vp_id)
-        self.de_s, self.ebs = db_utils.get_from_grass_type(self.vs_id)
+        self.de_f, self.ebf, self.fdnf, self.fdaf = db_utils.get_from_grass_type(self.vp_id)
+        self.de_s, self.ebs, self.fdns, self.fdas = db_utils.get_from_grass_type(self.vs_id)
         self.dep = self.d_ep()
         self.reg = self.reg_rel()
         self.rem = self.rem_rel()
         self.ca = db_utils.get_from_ac_table(self.ac_id)
         self.cp = db_utils.get_from_cp_table(self.cp_id)
+        self.ne = self.energy_selection()
 
     def d_ep(self):
         """
@@ -149,9 +150,86 @@ class GrossEnergy(object):
         me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 10 ** -3
         return me
 
+    def ne_vap(self):
+        """
+        Energia bruta total para la categoría 3A1ai Ganado Bovino Vacas de Alta Producción
+        :return:
+        """
+        en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
+        return en
+
+    def ne_vbp(self):
+        """
+        Energia bruta total para la categoría 3A1aii Ganado Bovino Vacas de Baja Producción
+        :return: en
+        """
+        en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
+        return en
+
+    def ne_vpc(self):
+        """
+        Energia bruta total para la categoría 3A1aiii Ganado Bovino Vacas para Producción de Carne
+        :return: en
+        """
+        en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
+        return en
+
+    def ne_tprf(self):
+        """
+        Energia bruta total para la categoría 3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
+        :return: en
+        """
+        en = self.maintenance() + self.activity() + self.work()
+        return en
+
+    def ne_tpd(self):
+        """
+        Energia bruta total para la categoría 3A1av Ganado Bovino Terneros pre-destetos
+        :return: en
+        """
+        en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk()
+        return en
+
+    def ne_tr(self):
+        """
+        Energia bruta total para la categoría 3A1avi Ganado Bovino Terneras de remplazo
+        :return:
+        """
+        en = self.maintenance() + self.activity() + self.grow() + self.work()
+        return en
+
+    def ne_ge(self):
+        """
+        Energia bruta total para la categoría 3A1avii Ganado Bovino Ganado de engorde
+        :return:
+        """
+        en = self.maintenance() + self.activity() + self.grow() + self.work()
+        return en
+
+    def energy_selection(self):
+        """
+        Seleción del la enegía bruta total dependiendo del animal tipo
+        :return: energy
+        """
+        if self.at_id == 1:
+            en = self.ne_vap()
+        elif self.at_id == 2:
+            en = self.ne_vbp()
+        elif self.at_id == 3:
+            en = self.ne_vpc()
+        elif self.at_id == 4:
+            en = self.ne_tprf()
+        elif self.at_id == 5:
+            en = self.ne_tpd()
+        elif self.at_id == 6:
+            en = self.ne_tr()
+        elif self.at_id == 7:
+            en = self.ne_ge()
+        return en
+
 
 def main():
-    ge = GrossEnergy(at_id=1, ca_id=2, milk=3660, grease=3.2)
+    ge = GrossEnergy(at_id=1, ca_id=1, milk=3660, grease=3.2)
     me = ge.maintenance()
     ae = ge.activity()
     preg = ge.pregnancy()
