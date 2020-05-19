@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import db_utils
 from gross_energy import GrossEnergy
-from db_utils import pg_connection
 
 
 class FactorEF(GrossEnergy):
@@ -11,25 +11,17 @@ class FactorEF(GrossEnergy):
         :param kwargs: parámetros para la caractrización del animal tipo
         """
         super().__init__(**kwargs)
-        self.ym = ym_id
+        self.ym_id = ym_id
+        self.ym = db_utils.get_from_ym_table(self.ym_id)
+        self.fmc = self.fcm()
 
-    def get_from_ym_table(self):
+    def gepd(self):
         """
-        Get data from ym table
-        :return: cp
+        energía bruta ponderada de la dieta (MJ kg -1 ).
+        :return:ebpd
         """
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-            SELECT  ym_eb
-            FROM ym
-            WHERE id_ym = '{0}'
-            """.format(self.ym)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            ym = res[0][0]
-        return ym
+        ebpd = self.ebf * self.pf / 100 + self.ebs * self.ps / 100
+        return ebpd
 
     def gbvap(self):
         """
@@ -44,9 +36,9 @@ class FactorEF(GrossEnergy):
         assert 2.0 <= self.grease <= 6.0, "El contenido de grasa en la leche puede ir desde el 2.0 % hasta el 6.0%"
         assert self.ca_id == 1, "La categoria de ganado bovino vacas de alta producción solo puede estar conformado " \
                                 "animales tipo Bos Taurus (1)"
-        gbvap_en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbvap_en * (ym / 100) * 365) / 55.65
+        gbvap_en = self.maintenance() + self.activity() + self.breastfeeding() + \
+                   self.pregnancy() + self.work()
+        ef = (gbvap_en * (self.ym / 100) * 365) / 55.65
         return ef, gbvap_en
 
     def gbvbp(self):
@@ -54,9 +46,9 @@ class FactorEF(GrossEnergy):
         3A1aii Ganado Bovino Vacas de Baja Producción
         :return: factor de emisión para la categoria 3A2aii
         """
-        gbvbp_en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbvbp_en * (ym / 100) * 365) / 55.65
+        gbvbp_en = self.maintenance() + self.activity() + self.breastfeeding() + \
+                   self.pregnancy() + self.work()
+        ef = (gbvbp_en * (self.ym / 100) * 365) / 55.65
         return ef, gbvbp_en
 
     def gbvpc(self):
@@ -65,8 +57,7 @@ class FactorEF(GrossEnergy):
         :return:
         """
         gbvpc_en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbvpc_en * (ym / 100) * 365) / 55.65
+        ef = (gbvpc_en * (self.ym / 100) * 365) / 55.65
         return ef, gbvpc_en
 
     def gbtpfr(self):
@@ -75,8 +66,7 @@ class FactorEF(GrossEnergy):
         :return:
         """
         gbtfr_en = self.maintenance() + self.activity() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbtfr_en * (ym / 100) * 365) / 55.65
+        ef = (gbtfr_en * (self.ym / 100) * 365) / 55.65
         return ef, gbtfr_en
 
     def gbtpd(self):
@@ -84,9 +74,9 @@ class FactorEF(GrossEnergy):
         3A1av Ganado Bovino Terneros pre-destetos
         :return:
         """
-        gbtpd_en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk()
-        ym = self.get_from_ym_table()
-        ef = (gbtpd_en * (ym / 100) * 273.75) / 55.65
+        gbtpd_en = self.maintenance() + self.activity() + self.grow() + self.work() - \
+                   self.milk()
+        ef = (gbtpd_en * (self.ym / 100) * 273.75) / 55.65
         return ef, gbtpd_en
 
     def gbtr(self):
@@ -95,8 +85,7 @@ class FactorEF(GrossEnergy):
         :return:
         """
         gbtr_en = self.maintenance() + self.activity() + self.grow() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbtr_en * (ym / 100) * 365) / 55.65
+        ef = (gbtr_en * (self.ym / 100) * 365) / 55.65
         return ef, gbtr_en
 
     def gbge(self):
@@ -105,8 +94,7 @@ class FactorEF(GrossEnergy):
         :return:
         """
         gbge_en = self.maintenance() + self.activity() + self.grow() + self.work()
-        ym = self.get_from_ym_table()
-        ef = (gbge_en * (ym / 100) * 365) / 55.65
+        ef = (gbge_en * (self.ym / 100) * 365) / 55.65
         return ef, gbge_en
 
     def cms(self, ge_t):
@@ -115,7 +103,8 @@ class FactorEF(GrossEnergy):
         :param ge_t: total gross energy
         :return: cms (kg dia-1)
         """
-        c_ms = ge_t / self.d_ep() 
+        gedp = self.gepd()
+        c_ms = ge_t / gedp
         return c_ms
 
     def cms_pv(self, c_ms):
@@ -127,11 +116,48 @@ class FactorEF(GrossEnergy):
         cmspv = c_ms / self.weight
         return cmspv
 
+    def cmcf(self, c_ms):
+        """
+        Consumo de forraje (kg dia-1)
+        :param c_ms: Consumo de materia seca
+        :return: cf
+        """
+        cf = c_ms * self.pf / 100
+        return cf
+
+    def cmcs(self, c_ms):
+        """
+        Consumo de concentrado/suplemento
+        :param c_ms: Consumo de materia seca
+        :return: cf (kg día -1)
+        """
+        cs = c_ms * self.ps / 100
+        return cs
+
+    def fcm(self):
+        """
+        Leche corregida por grasa al 3.5% (kg/día)
+        :return: f_cm
+        """
+        f_cm = 0.4324 * (self.milk / 365) + 16.216 * (self.milk / 365 * self.grease / 100)
+        return f_cm
+
+    def cpmsgbvap(self):
+        """
+        Consumo potencial de materia seca para 3A1ai Ganado Bovino Vacas de Alta Producción
+        :return: cpms (kg día -1 )
+        """
+        cpms = (0.0185 * self.weight + 0.305 * self.fmc) * (1 - (self.rcms / 100) *
+                                                            (self.tc - self.ta))
+        return cpms
+
 
 def main():
     ef = FactorEF(weight=500, ta=13, milk=3660, grease=3.2, ca_id=1)
-    hp = ef.gbvap()
-    print(hp)
+    fe, eg = ef.gbvap()
+    cms = ef.cms(eg)
+    print(fe, eg, cms)
+    print(ef.cpmsgbvap())
 
 
 if __name__ == "__main__":

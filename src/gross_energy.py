@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from db_utils import pg_connection
+import db_utils
 
 
 class GrossEnergy(object):
@@ -46,95 +46,15 @@ class GrossEnergy(object):
         self.ac_id = coe_act_id
         self.ht = ht
         self.id_cs = cs_id
-
-    def get_from_ca_table(self):
-        """
-        Get data from categoria animal table
-        :return: a1, tc
-        """
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-            SELECT  coe_cat_animal, temp_conf 
-            FROM categoria_animal
-            WHERE id_categoria_animal = '{0}'
-            """.format(self.ca_id)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            a1 = res[0][0]
-            tc = res[0][1]
-        return a1, tc
-
-    def get_from_cp_table(self):
-        """
-        Get data from coeficiente de preñez table
-        :return: cp
-        """
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-            SELECT  coe_prenez 
-            FROM coeficiente_prenez
-            WHERE id_coe_prenez = '{0}'
-            """.format(self.cp_id)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            cp = res[0][0]
-        return cp
-
-    @staticmethod
-    def get_from_grass_type(id_):
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-                    SELECT em_rumiantes, energia_bruta_pasto 
-                    FROM variedad_pasto
-                    WHERE id_variedad = '{0}'
-                    """.format(id_)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            edr = res[0][0]
-            ebp = res[0][1]
-        return edr, ebp
-
-    def get_from_ac_table(self):
-        """
-        Get data from coeficiente de actividad table
-        :return: ca
-        """
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-                    SELECT coe_actividad 
-                    FROM coeficiente_actividad
-                    WHERE id_coe_actividad = '{0}'
-                    """.format(self.ac_id)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            ca = res[0][0]
-        return ca
-
-    def get_from_cs_table(self):
-        """
-        Get data from condición sexual table
-        :return: ca
-        """
-        conn = pg_connection()
-        with conn as connection:
-            query = """
-            SELECT coe_cond_sexual 
-            FROM condicion_sexual
-            WHERE id_cond_sexual = '{0}'
-            """.format(self.id_cs)
-            cur = connection.cursor()
-            cur.execute(query)
-            res = cur.fetchall()
-            fcs = res[0][0]
-        return fcs
+        self.a1, self.tc, self.rcms = db_utils.get_from_ca_table(self.ca_id)
+        self.fcs = db_utils.get_from_cs_table(self.id_cs)
+        self.de_f, self.ebf = db_utils.get_from_grass_type(self.vp_id)
+        self.de_s, self.ebs = db_utils.get_from_grass_type(self.vs_id)
+        self.dep = self.d_ep()
+        self.reg = self.reg_rel()
+        self.rem = self.rem_rel()
+        self.ca = db_utils.get_from_ac_table(self.ac_id)
+        self.cp = db_utils.get_from_cp_table(self.cp_id)
 
     def d_ep(self):
         """
@@ -142,32 +62,28 @@ class GrossEnergy(object):
         :return:
         """
         assert self.ps + self.pf == 100, "La suma de los porcentajes de forraje y complemento debe ser igual a 100%"
-        de_f, epf = self.get_from_grass_type(self.vp_id)
-        de_s, eps = self.get_from_grass_type(self.vs_id)
-        dep = (de_f * 100 / epf) * self.pf / 100 + (de_s * 100 / eps) * self.ps / 100
+        dep = (self.de_f * 100 / self.ebf) * self.pf / 100 + (self.de_s * 100 / self.ebs) * self.ps / 100
         return dep
 
-    @staticmethod
-    def rem_rel(dep):
+    def rem_rel(self):
         """
         Relación entre la energía neta disponible en una dieta para mantenimiento
         y la energía digerible consumida (rem)
         :param dep Digestibilidad de la Dieta
         :return: rem
         """
-        rem = (1.123 - (4.092 * 10 ** -3 * dep) +
-               (1.126 * 10 ** -5 * (dep ** 2)) - (25.4 / dep))
+        rem = (1.123 - (4.092 * 10 ** -3 * self.dep) +
+               (1.126 * 10 ** -5 * (self.dep ** 2)) - (25.4 / self.dep))
         return rem
 
-    @staticmethod
-    def reg_rel(dep):
+    def reg_rel(self):
         """
         Relación entre la energía neta disponible en la dieta para crecimiento y
         la energía digerible consumida
         :return: reg
         """
-        reg = (1.164 - (5.16 * 10 ** -3 * dep) +
-               (1.308 * 10 ** -5 * (dep ** 2)) - (37.4 / dep))
+        reg = (1.164 - (5.16 * 10 ** -3 * self.dep) +
+               (1.308 * 10 ** -5 * (self.dep ** 2)) - (37.4 / self.dep))
         return reg
 
     def maintenance(self):
@@ -175,10 +91,7 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta para mantenimiento GEm o em
         :return: em (Mj día -1)
         """
-        a1, tc = self.get_from_ca_table()
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        em = (self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta))) / rem / (dep / 100)
+        em = (self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta))) / self.rem / (self.dep / 100)
         return em
 
     def activity(self):
@@ -186,11 +99,8 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta de actividad GEa o ea
         :return: ea (Mj día -1)
         """
-        a1, tc = self.get_from_ca_table()
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        ca = self.get_from_ac_table()
-        em = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * ca / rem / (dep / 100)
+        em = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.ca / self.rem / \
+             (self.dep / 100)
         return em
 
     def breastfeeding(self):
@@ -198,10 +108,7 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta para lactancia o producción de leche GEl o el
         :return: el (Mj día -1)
         """
-        # TODO preguntar si la leche y la grasa tienen límites, revisar si el % de leche entra completo
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / rem / (dep / 100)
+        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / self.rem / (self.dep / 100)
         return el
 
     def work(self):
@@ -209,10 +116,8 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para el trabajo
         :return: ew
         """
-        a1, tc = self.get_from_ca_table()
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        ew = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * 0.1 * self.ht / rem / (dep / 100)
+        ew = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * 0.1 * self.ht / self.rem / \
+             (self.dep / 100)
         return ew
 
     def pregnancy(self):
@@ -220,11 +125,8 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para gestación o preñez
         :return: ep (Mj día -1)
         """
-        a1, tc = self.get_from_ca_table()
-        dep = self.d_ep()
-        rem = self.rem_rel(dep)
-        cp = self.get_from_cp_table()
-        ep = ((self.weight ** 0.75) * (a1 + (0.0029288 * (tc - self.ta)))) * cp / rem / (dep / 100)
+        ep = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.cp / self.rem / \
+             (self.dep / 100)
         return ep
 
     def grow(self):
@@ -232,10 +134,8 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para ganancia de peso o crecimiento
         :return:GEg o eg (Mj día -1)
         """
-        dep = self.d_ep()
-        reg = self.reg_rel(dep)
-        fcs = self.get_from_cs_table()
-        eg = (22.02 * (self.weight / (fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097 / reg / (dep / 100)
+        eg = (22.02 * (self.weight / (self.fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097 / self.reg / \
+             (self.dep / 100)
         return eg
 
     def milk_energy(self):
