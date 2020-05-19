@@ -4,8 +4,8 @@ import db_utils
 
 
 class GrossEnergy(object):
-    def __init__(self, at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
-                 adult_w=550, cp_id=2, gan=0, milk=0, grease=0, ht=0, cs_id=1, **kwargs):
+    def __init__(self, at_id=1, ca_id=1, coe_act_id=2,  ta=13.0, pf=100.0, ps=0, vp_id=1, vs_id=40, weight=500.0,
+                 adult_w=550.0, cp_id=2, gan=0.0, milk=0.0, grease=0.0, ht=0.0, cs_id=1, **kwargs):
         """
         :param at_id: Animal tipo. Animal type. ID animal type according to the DB.
                 E.g. 1. Vacas de alta producción
@@ -73,7 +73,6 @@ class GrossEnergy(object):
         """
         Relación entre la energía neta disponible en una dieta para mantenimiento
         y la energía digerible consumida (rem)
-        :param dep Digestibilidad de la Dieta
         :return: rem
         """
         rem = (1.123 - (4.092 * 10 ** -3 * self.dep) +
@@ -187,7 +186,7 @@ class GrossEnergy(object):
         Energia bruta total para la categoría 3A1av Ganado Bovino Terneros pre-destetos
         :return: en
         """
-        en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk()
+        en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk_energy()
         return en
 
     def ne_tr(self):
@@ -212,20 +211,19 @@ class GrossEnergy(object):
         :return: energy
         """
         if self.at_id == 1:
-            en = self.ne_vap()
+            return self.ne_vap()
         elif self.at_id == 2:
-            en = self.ne_vbp()
+            return self.ne_vbp()
         elif self.at_id == 3:
-            en = self.ne_vpc()
+            return self.ne_vpc()
         elif self.at_id == 4:
-            en = self.ne_tprf()
+            return self.ne_tprf()
         elif self.at_id == 5:
-            en = self.ne_tpd()
+            return self.ne_tpd()
         elif self.at_id == 6:
-            en = self.ne_tr()
+            return self.ne_tr()
         elif self.at_id == 7:
-            en = self.ne_ge()
-        return en
+            return self.ne_ge()
 
 
 def main():
