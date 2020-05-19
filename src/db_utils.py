@@ -27,12 +27,16 @@ def pg_config(filename='../config/database.ini', section='pg_afolu_fe'):
 def pg_connection_str(**kwargs):
     """
     Create string connection for using with pandas read_sql
-    :param kwargs:
+    :type kwargs: basestring
+    :param kwargs: set of strings for creating string connection
     :return:
     """
-    params = pg_config(**kwargs)
-    conn = 'postgresql://{user}:{password}@{host}:{port}/{database}'.format(**params)
-
+    # read connection parameters
+    if not kwargs:
+        params = pg_config(**kwargs)
+    else:
+        params = kwargs
+    conn = 'postgresql://{user}:{password}@{host}:{port}/{dbname}'.format(**params)
     return conn
 
 
@@ -65,7 +69,7 @@ def get_from_ca_table(ca_id):
     conn = pg_connection()
     with conn as connection:
         query = """
-        SELECT  coe_cat_animal, temp_conf, rcms
+        SELECT  coe_cat_animal, temp_conf, rcms, ib
         FROM categoria_animal
         WHERE id_categoria_animal = '{0}'
         """.format(ca_id)
@@ -75,7 +79,8 @@ def get_from_ca_table(ca_id):
         a1 = res[0][0]
         tc = res[0][1]
         rcms = res[0][2]
-    return a1, tc, rcms
+        bi = res[0][3]
+    return a1, tc, rcms, bi
 
 
 def get_from_cp_table(cp_id):
@@ -170,6 +175,11 @@ def get_from_ym_table(ym):
     return ym
 
 
-if __name__ == '__main__':
+def main():
     db_parameters = pg_config()
-    pass
+    db_str = pg_connection_str()
+
+
+if __name__ == '__main__':
+    main()
+
