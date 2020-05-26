@@ -1,18 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import db_utils
 from gross_energy import GrossEnergy
 
 
 class FactorEF(GrossEnergy):
-    def __init__(self, ym_id=1, **kwargs):
+    def __init__(self, **kwargs):
         """
-        :param ym_id: indicie del factor ym
         :param kwargs: parámetros para la caractrización del animal tipo
         """
         super().__init__(**kwargs)
         self.cms = self.cms_calc()
-        self.ym = self.ym_calc(self.ne)
+        self.ym = self.ym_calc()
         self.fcm = self.fcm_calc()
         if self.milk / 365 >= 11.5:
             self.ajl = 1.7
@@ -36,7 +34,7 @@ class FactorEF(GrossEnergy):
         fdn = self.fdnf * self.pf / 100 + self.fdns * self.ps / 100
         return fdn
 
-    def ym_calc(self, ge):
+    def ym_calc(self):
         """
         Cálculo del Ym
         :return: ym
@@ -150,7 +148,6 @@ class FactorEF(GrossEnergy):
     def cms_calc(self):
         """
         Consumo de materia seca (calculado a través del consumo de energía)
-        :param ge_t: total gross energy
         :return: cms (kg dia-1)
         """
         cms = self.ne / self.gepd_calc()
@@ -261,11 +258,6 @@ def main():
                   adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=0, cs_id=1,  ym_id=4)
     fe = ef.gbvap_ef()
     print(f"factor de emision: {round(fe, 2)}")
-    # print(f"Consumo de energia bruta: {round(eg,2)}")
-    # print(f"Consumo de materia seca (calculado a través del consumo de energía): {round(cms, 2)}")
-    # print(f"Consumo de forraje: {round(1 * cms, 2) }")
-    # print(f"Consumo de Concentrado: {round(0 * cms, 2)}")
-    # print(f"consumo potencial de materia seca: {round(ef.cpmsgbvap(), 2)}")
 
 
 if __name__ == "__main__":
