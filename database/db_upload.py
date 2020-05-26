@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import pandas as pd
-from db_utils import pg_connection_str
+from database.db_utils import pg_connection_str
 
 
 def upload_data(df, tb_name):

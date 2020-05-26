@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import db_utils
+from database import db_utils
 
 
 class GrossEnergy(object):

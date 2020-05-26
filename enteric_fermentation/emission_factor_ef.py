@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from gross_energy import GrossEnergy
+from enteric_fermentation.gross_energy import GrossEnergy
 
 
 class FactorEF(GrossEnergy):
