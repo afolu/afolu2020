@@ -84,23 +84,15 @@ class FactorEF(GrossEnergy):
     def gbvap_ef(self):
         """
         3A1ai Ganado Bovino Vacas de Alta Producción
-        :return: factor de emision para la categoria 3A2ai
+        :return: factor de emision para la categoria 3A1ai
         """
-        assert 250 <= self.weight <= 700, "El peso vivo promedio de estas razas a nivel nacional puede variar desde " \
-                                          "los 250 a 700 kg tanto promedio como adulto"
-        assert 10 <= self.ta <= 18, "Temperaturas promedio para climas fríos a templados que van de 10 a 18°C"
-        assert 2440 <= self.milk <= 15250, "El rango de producción de leche puede ir de 2,440 a " \
-                                           "15,250 litros por lactancia"
-        assert 2.0 <= self.grease <= 6.0, "El contenido de grasa en la leche puede ir desde el 2.0 % hasta el 6.0%"
-        assert self.ca_id == 1, "La categoria de ganado bovino vacas de alta producción solo puede estar conformado " \
-                                "animales tipo Bos Taurus (1)"
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbvbp_ef(self):
         """
         3A1aii Ganado Bovino Vacas de Baja Producción
-        :return: factor de emisión para la categoria 3A2aii
+        :return: factor de emisión para la categoria 3A1aii
         """
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
@@ -108,7 +100,7 @@ class FactorEF(GrossEnergy):
     def gbvpc_ef(self):
         """
         3A1aiii Ganado Bovino Vacas para Producción de Carne
-        :return:
+        :return: factor de emisión para la categoria 3A1aiii
         """
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
@@ -116,7 +108,7 @@ class FactorEF(GrossEnergy):
     def gbtpfr_ef(self):
         """
         3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
-        :return:
+        :return: factor de emisión para la categoria 3A1aiv
         """
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
@@ -124,7 +116,7 @@ class FactorEF(GrossEnergy):
     def gbtpd_ef(self):
         """
         3A1av Ganado Bovino Terneros pre-destetos
-        :return:
+        :return: factor de emisión para la categoria 3A1av
         """
         ef = (self.ne * (self.ym / 100) * 273.75) / 55.65
         return ef
@@ -132,7 +124,7 @@ class FactorEF(GrossEnergy):
     def gbtr_ef(self):
         """
         3A1avi Ganado Bovino Terneras de remplazo
-        :return:
+        :return:factor de emisión para la categoria 3A1avi
         """
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
@@ -140,7 +132,7 @@ class FactorEF(GrossEnergy):
     def gbge_ef(self):
         """
         3A1avii Ganado Bovino Ganado de engorde
-        :return:
+        :return:factor de emisión para la categoria 3A1avii
         """
         ef = (self.ne * (self.ym / 100) * 365) / 55.65
         return ef
