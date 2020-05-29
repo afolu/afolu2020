@@ -29,27 +29,24 @@ def ef_execution(at_id=1, ca_id=1, coe_act_id=2,  ta=13.0, pf=100.0, ps=0, vp_id
     """
     ef = FactorEF()
     if at_id == 1:
-        return ef.ne()
+        return print(ef.ne)
     elif at_id == 2:
-        return ne_vbp()
+        return ef.ne_vbp()
     elif at_id == 3:
-        return self.ne_vpc()
+        return ef.ne_vpc()
     elif at_id == 4:
-        return ne_tprf()
+        return ef.ne_tprf()
     elif at_id == 5:
-        return ne_tpd()
-    elif self.at_id == 6:
-        return self.ne_tr()
-    elif self.at_id == 7:
-        return self.ne_ge()
-
-    return
-
-
+        return ef.ne_tpd()
+    elif at_id == 6:
+        return ef.ne_tr()
+    elif at_id == 7:
+        return ef.ne_ge()
 
 
 def main():
-
+    ef_execution(at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
+                 adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=0, cs_id=1,  ym_id=4)
     pass
 
 
