@@ -29,7 +29,8 @@ def ef_execution(at_id=1, ca_id=1, coe_act_id=2,  ta=13.0, pf=100.0, ps=0, vp_id
     """
     ef = FactorEF()
     if at_id == 1:
-        return print(ef.ne)
+        print(ef.ne)
+        return 0
     elif at_id == 2:
         return ef.ne_vbp()
     elif at_id == 3:
