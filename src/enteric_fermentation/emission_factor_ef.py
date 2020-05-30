@@ -9,7 +9,10 @@ class FactorEF(GrossEnergy):
         :param kwargs: parámetros para la caractrización del animal tipo
         """
         super().__init__(**kwargs)
+        self.gepd = self.gepd_calc()
         self.cms = self.cms_calc()
+        self.fda = self.fda_calc()
+        self.fdn = self.fdn_calc()
         self.ym = self.ym_calc()
         self.fcm = self.fcm_calc()
         if self.milk / 365 >= 11.5:
@@ -17,9 +20,6 @@ class FactorEF(GrossEnergy):
         else:
             self.ajl = 0
         self.eqsbw = self.eqsbw_calc()
-        self.fda = self.fda_calc()
-        self.fdn = self.fdn_calc()
-        self.gepd = self.gepd_calc()
 
     def fda_calc(self):
         """
