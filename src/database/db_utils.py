@@ -4,7 +4,7 @@ import psycopg2
 import os
 from configparser import ConfigParser
 
-path_root = os.path.abspath(os.path.join(os.getcwd(), "../../"))
+path_root = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../../"))
 
 
 def pg_config(filename='database.ini', section='pg_afolu_fe'):
