@@ -108,17 +108,17 @@ def get_from_grass_type(id_):
     conn = pg_connection()
     with conn as connection:
         query = """
-                SELECT em_rumiantes, energia_bruta_pasto, fdn_dieta, fda
+                SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda
                 FROM variedad_pasto
                 WHERE id_variedad = '{0}'
                 """.format(id_)
         cur = connection.cursor()
         cur.execute(query)
         res = cur.fetchall()
-        edr = res[0][0]
-        ebp = res[0][1]
-        fdn = res[0][2]
-        fda = res[0][3]
+        edr: float = res[0][0]
+        ebp: float = res[0][1]
+        fdn: float = res[0][2]
+        fda: float = res[0][3]
     return edr, ebp, fdn, fda
 
 
