@@ -17,13 +17,13 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 2:
         ceb = ef.ne
@@ -32,13 +32,13 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 3:
         ceb = ef.ne
@@ -47,27 +47,28 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 4:
         ceb = ef.ne
         fe = ef.gbtpfr_ef()
+        cpms = ef.cpmsgbtfr()
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 5:
         ceb = ef.ne
@@ -76,13 +77,13 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 6:
         ceb = ef.ne
@@ -91,13 +92,13 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
     elif kwargs['at_id'] == 7:
         ceb = ef.ne
@@ -107,13 +108,13 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
-        print(f"FE = {fe}")
-        print(f"CEB = {ceb}")
-        print(f"CMS = {cms}")
-        print(f"CF = {cf}")
-        print(f"CC = {cc}")
+        print(f"FE={fe}")
+        print(f"CEB={ceb}")
+        print(f"CMS={cms}")
+        print(f"CF={cf}")
+        print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS = {cpms}")
+        print(f"CMS={cpms}")
         return fe, ceb, cms, cf, cc, cpms
 
 
