@@ -17,6 +17,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -24,7 +26,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 2:
         ceb = ef.ne
         fe = ef.gbvbp_ef()
@@ -32,6 +36,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -39,7 +45,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 3:
         ceb = ef.ne
         fe = ef.gbvpc_ef()
@@ -47,6 +55,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -54,7 +64,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 4:
         ceb = ef.ne
         fe = ef.gbtpfr_ef()
@@ -62,6 +74,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -69,7 +83,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 5:
         ceb = ef.ne
         fe = ef.gbtpd_ef()
@@ -77,6 +93,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -84,7 +102,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 6:
         ceb = ef.ne
         fe = ef.gbtr_ef()
@@ -92,6 +112,8 @@ def ef_execution(**kwargs):
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -99,15 +121,18 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 7:
         ceb = ef.ne
         fe = ef.gbge_ef()
         cpms = ef.cpmsgbge()
-
         cms = ef.cms
         cf = ef.cmcf_calc()
         cc = ef.cmcs_calc()
+        ccms = cpms - cms
+        dpcms = ((cms * 100 / cpms) - 100) / 100
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -115,7 +140,9 @@ def ef_execution(**kwargs):
         print(f"CC={cc}")
         print("Punto de control")
         print(f"CMS={cpms}")
-        return fe, ceb, cms, cf, cc, cpms
+        print(f"CCMS={ccms}")
+        print(f"DPCMS={dpcms}")
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
 
 
 def main():
