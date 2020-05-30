@@ -51,8 +51,8 @@ class GrossEnergy(object):
         self.id_cs = cs_id
         self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
-        self.de_f, self.ebf, self.fdnf, self.fdaf = db_utils.get_from_grass_type(self.vp_id)
-        self.de_s, self.ebs, self.fdns, self.fdas = db_utils.get_from_grass_type(self.vs_id)
+        self.edr_f, self.ebf, self.fdnf, self.fdaf = db_utils.get_from_grass_type(self.vp_id)
+        self.edr_s, self.ebs, self.fdns, self.fdas = db_utils.get_from_grass_type(self.vs_id)
         self.dep = self.d_ep()
         self.reg = self.reg_rel()
         self.rem = self.rem_rel()
@@ -65,8 +65,7 @@ class GrossEnergy(object):
         Digestibilidad de la dieta - dep
         :return:
         """
-        assert self.ps + self.pf == 100, "La suma de los porcentajes de forraje y complemento debe ser igual a 100%"
-        dep = (self.de_f * 100 / self.ebf) * self.pf / 100 + (self.de_s * 100 / self.ebs) * self.ps / 100
+        dep = (self.edr_f * 100 / self.ebf) * self.pf / 100 + (self.edr_s * 100 / self.ebs) * self.ps / 100
         return dep
 
     def rem_rel(self):
@@ -75,8 +74,8 @@ class GrossEnergy(object):
         y la energía digerible consumida (rem)
         :return: rem
         """
-        rem = (1.123 - (4.092 * 10 ** -3 * self.dep) +
-               (1.126 * 10 ** -5 * (self.dep ** 2)) - (25.4 / self.dep))
+        rem = (1.123 - (4.092 * 0.001 * self.dep) +
+               (1.126 * 0.00001 * (self.dep ** 2))) - (25.4 / self.dep)
         return rem
 
     def reg_rel(self):
@@ -85,8 +84,8 @@ class GrossEnergy(object):
         la energía digerible consumida
         :return: reg
         """
-        reg = (1.164 - (5.16 * 10 ** -3 * self.dep) +
-               (1.308 * 10 ** -5 * (self.dep ** 2)) - (37.4 / self.dep))
+        reg = (1.164 - (5.16 * 0.001 * self.dep) +
+               (1.308 * 0.00001 * (self.dep ** 2)) - (37.4 / self.dep))
         return reg
 
     def maintenance(self):
@@ -137,7 +136,7 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para ganancia de peso o crecimiento
         :return:GEg o eg (Mj día -1)
         """
-        eg = (22.02 * (self.weight / (self.fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097 / self.reg / \
+        eg = ((22.02 * (self.weight / (self.fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097) / self.reg / \
              (self.dep / 100)
         return eg
 
@@ -146,12 +145,12 @@ class GrossEnergy(object):
         Aporte de energía bruta de la leche consumida por el ternero.
         :return: me (Mj día -1)
         """
-        me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 10 ** -3
+        me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 0.001
         return me
 
     def ne_vap(self):
         """
-        Energia bruta total para la categoría 3A1ai Ganado Bovino Vacas de Alta Producción
+        Consumo total energia bruta total para la categoría 3A1ai Ganado Bovino Vacas de Alta Producción
         :return:
         """
         en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
@@ -159,7 +158,7 @@ class GrossEnergy(object):
 
     def ne_vbp(self):
         """
-        Energia bruta total para la categoría 3A1aii Ganado Bovino Vacas de Baja Producción
+        Consumo total energia bruta total para la categoría 3A1aii Ganado Bovino Vacas de Baja Producción
         :return: en
         """
         en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
@@ -167,7 +166,7 @@ class GrossEnergy(object):
 
     def ne_vpc(self):
         """
-        Energia bruta total para la categoría 3A1aiii Ganado Bovino Vacas para Producción de Carne
+        Consumo total energia bruta total para la categoría 3A1aiii Ganado Bovino Vacas para Producción de Carne
         :return: en
         """
         en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
@@ -175,7 +174,7 @@ class GrossEnergy(object):
 
     def ne_tprf(self):
         """
-        Energia bruta total para la categoría 3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
+        Consumo total energia bruta total para la categoría 3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
         :return: en
         """
         en = self.maintenance() + self.activity() + self.work()
@@ -183,26 +182,26 @@ class GrossEnergy(object):
 
     def ne_tpd(self):
         """
-        Energia bruta total para la categoría 3A1av Ganado Bovino Terneros pre-destetos
+        Consumo total energia bruta total para la categoría 3A1av Ganado Bovino Terneros pre-destetos
         :return: en
         """
-        en = self.maintenance() + self.activity() + self.grow() + self.work() - self.milk_energy()
+        en = self.maintenance() + self.activity() + self.work() + self.grow() - self.milk_energy()
         return en
 
     def ne_tr(self):
         """
-        Energia bruta total para la categoría 3A1avi Ganado Bovino Terneras de remplazo
+        Consumo total energia bruta total para la categoría 3A1avi Ganado Bovino Terneras de remplazo
         :return:
         """
-        en = self.maintenance() + self.activity() + self.grow() + self.work()
+        en = self.maintenance() + self.activity() + self.work() + self.grow()
         return en
 
     def ne_ge(self):
         """
-        Energia bruta total para la categoría 3A1avii Ganado Bovino Ganado de engorde
+        Consumo total energia bruta total para la categoría 3A1avii Ganado Bovino Ganado de engorde
         :return:
         """
-        en = self.maintenance() + self.activity() + self.grow() + self.work()
+        en = self.maintenance() + self.activity() + self.work() + self.grow()
         return en
 
     def energy_selection(self):
