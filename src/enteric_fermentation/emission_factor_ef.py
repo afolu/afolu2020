@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from enteric_fermentation.gross_energy import GrossEnergy
+from src.enteric_fermentation.gross_energy import GrossEnergy
 
 
 class FactorEF(GrossEnergy):
@@ -247,7 +247,7 @@ class FactorEF(GrossEnergy):
 
 def main():
     ef = FactorEF(at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
-                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=0, cs_id=1,  ym_id=4)
+                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=50, cs_id=1,  ym_id=4)
     fe = ef.gbvap_ef()
     print(f"factor de emision: {round(fe, 2)}")
 
