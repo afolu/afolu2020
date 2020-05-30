@@ -17,6 +17,9 @@ class FactorEF(GrossEnergy):
         else:
             self.ajl = 0
         self.eqsbw = self.eqsbw_calc()
+        self.fda = self.fda_calc()
+        self.fdn = self.fdn_calc()
+        self.gepd = self.gepd_calc()
 
     def fda_calc(self):
         """
@@ -39,10 +42,8 @@ class FactorEF(GrossEnergy):
         Cálculo del Ym
         :return: ym
         """
-        fda = self.fda_calc()
-        fdn = self.fdn_calc()
-        ym = (3.41 + 0.52 * self.cms - 0.996 * ((self.cms * (fda / 100)) +
-                                                1.15 * (self.cms * (fdn / 100))) * 100) / self.ne
+        ym = (3.41 + 0.52 * self.cms - 0.996 * ((self.cms * (self.fda / 100)) +
+                                                1.15 * (self.cms * (self.fdn / 100))) * 100) / self.ne
         return ym
 
     def eqsbw_calc(self):
@@ -142,34 +143,31 @@ class FactorEF(GrossEnergy):
         Consumo de materia seca (calculado a través del consumo de energía)
         :return: cms (kg dia-1)
         """
-        cms = self.ne / self.gepd_calc()
+        cms = self.ne / self.gepd
         return cms
 
-    def cms_pv_calc(self, c_ms):
+    def cms_pv_calc(self):
         """
         Consumo de materia seca como porcentaje de peso vivo
-        :param c_ms: Consumo de materia seca
         :return: cmspv
         """
-        cmspv = c_ms / self.weight
+        cmspv = self.cms / self.weight
         return cmspv
 
-    def cmcf_calc(self, c_ms):
+    def cmcf_calc(self):
         """
         Consumo de forraje (kg dia-1)
-        :param c_ms: Consumo de materia seca
         :return: cf
         """
-        cf = c_ms * self.pf / 100
+        cf = self.cms * self.pf / 100
         return cf
 
-    def cmcs_calc(self, c_ms):
+    def cmcs_calc(self):
         """
         Consumo de concentrado/suplemento
-        :param c_ms: Consumo de materia seca
         :return: cf (kg día -1)
         """
-        cs = c_ms * self.ps / 100
+        cs = self.cms * self.ps / 100
         return cs
 
     def cpmsgbvap(self):
@@ -183,7 +181,7 @@ class FactorEF(GrossEnergy):
 
     def cpmsgbvbp(self):
         """
-        Consumo potencial de materia seca para 3A1ai Ganado Bovino Vacas de Baja Producción
+        Consumo potencial de materia seca para 3A1aii Ganado Bovino Vacas de Baja Producción
         :return: cpms (kg día -1 )
         """
         cpms = ((self.weight ** 0.75) * (0.14652 * (self.maintenance() / 4.184)) -
