@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 import psycopg2
 import os
-import sys
 from configparser import ConfigParser
+
+path_root = os.path.abspath(os.path.join(os.getcwd(), "../../"))
 
 
 def pg_config(filename='database.ini', section='pg_afolu_fe'):
-    path_root = os.path.abspath(os.path.join(os.getcwd(), "../"))
-    print(os.getcwd())
     filename = f'{path_root}/config/{filename}'
-    print(filename)
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -26,7 +24,6 @@ def pg_config(filename='database.ini', section='pg_afolu_fe'):
         return db
     else:
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
-        exit()
 
 
 def pg_connection_str(**kwargs):
