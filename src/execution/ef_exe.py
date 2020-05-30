@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from enteric_fermentation.emission_factor_ef import FactorEF
+from src.enteric_fermentation.emission_factor_ef import FactorEF
 
 
 def ef_execution(**kwargs):
@@ -13,14 +13,14 @@ def ef_execution(**kwargs):
     if kwargs['at_id'] == 1:
         print(ef.ne)
         return 0
-    elif kwargs['at_id']  == 2:
+    elif kwargs['at_id'] == 2:
         print(ef.ne_vbp())
         return ef.ne_vbp()
-    elif kwargs['at_id']  == 3:
+    elif kwargs['at_id'] == 3:
         return ef.ne_vpc()
-    elif kwargs['at_id']  == 4:
+    elif kwargs['at_id'] == 4:
         return ef.ne_tprf()
-    elif kwargs['at_id']  == 5:
+    elif kwargs['at_id'] == 5:
         return ef.ne_tpd()
     elif kwargs['at_id'] == 6:
         return ef.ne_tr()
