@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.enteric_fermentation.gross_energy import GrossEnergy
 
@@ -247,8 +248,8 @@ class FactorEF(GrossEnergy):
 
 
 def main():
-    ef = FactorEF(at_id=1, ca_id=1, coe_act_id=2,  ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
-                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=50, cs_id=1,  ym_id=4)
+    ef = FactorEF(at_id=1, ca_id=1, coe_act_id=2, ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
+                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=50, cs_id=1, ym_id=4)
     fe = ef.gbvap_ef()
     print(f"factor de emision: {round(fe, 2)}")
 
