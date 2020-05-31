@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+import os
+sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.enteric_fermentation.gross_energy import GrossEnergy
 
 
@@ -250,5 +253,5 @@ def main():
     print(f"factor de emision: {round(fe, 2)}")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

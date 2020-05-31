@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+import os
+sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
+
 from src.enteric_fermentation.emission_factor_ef import FactorEF
 
 
