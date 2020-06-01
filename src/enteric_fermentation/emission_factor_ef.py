@@ -46,8 +46,8 @@ class FactorEF(GrossEnergy):
         Cálculo del Ym
         :return: ym
         """
-        ym = (3.41 + 0.52 * self.cms - 0.996 * ((self.cms * (self.fda / 100)) +
-                                                1.15 * (self.cms * (self.fdn / 100))) * 100) / self.ne
+        ym = ((3.41 + 0.52 * self.cms - 0.996 * (self.cms * self.fda / 100) +
+               1.15 * (self.cms * self.fdn / 100)) * 100) / self.tge
         return ym
 
     def eqsbw_calc(self):
@@ -91,7 +91,7 @@ class FactorEF(GrossEnergy):
         3A1ai Ganado Bovino Vacas de Alta Producción
         :return: factor de emision para la categoria 3A1ai
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbvbp_ef(self):
@@ -99,7 +99,7 @@ class FactorEF(GrossEnergy):
         3A1aii Ganado Bovino Vacas de Baja Producción
         :return: factor de emisión para la categoria 3A1aii
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbvpc_ef(self):
@@ -107,7 +107,7 @@ class FactorEF(GrossEnergy):
         3A1aiii Ganado Bovino Vacas para Producción de Carne
         :return: factor de emisión para la categoria 3A1aiii
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbtpfr_ef(self):
@@ -115,15 +115,15 @@ class FactorEF(GrossEnergy):
         3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
         :return: factor de emisión para la categoria 3A1aiv
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbtpd_ef(self):
         """
         3A1av Ganado Bovino Terneros pre-destetos
-        :return: factor de emisión para la categoria 3A1av
+        :return: factor de emisión para la categoria 3A1av (Kg CH4 animal-1 año-1)
         """
-        ef = (self.ne * (self.ym / 100) * 273.75) / 55.65
+        ef = (self.tge * (self.ym / 100) * 273.75) / 55.65
         return ef
 
     def gbtr_ef(self):
@@ -131,7 +131,7 @@ class FactorEF(GrossEnergy):
         3A1avi Ganado Bovino Terneras de remplazo
         :return:factor de emisión para la categoria 3A1avi
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def gbge_ef(self):
@@ -139,7 +139,7 @@ class FactorEF(GrossEnergy):
         3A1avii Ganado Bovino Ganado de engorde
         :return:factor de emisión para la categoria 3A1avii
         """
-        ef = (self.ne * (self.ym / 100) * 365) / 55.65
+        ef = (self.tge * (self.ym / 100) * 365) / 55.65
         return ef
 
     def cms_calc(self):
@@ -147,7 +147,7 @@ class FactorEF(GrossEnergy):
         Consumo de materia seca (calculado a través del consumo de energía)
         :return: cms (kg dia-1)
         """
-        cms = self.ne / self.gepd
+        cms = self.tge / self.gepd
         return cms
 
     def cms_pv_calc(self):
@@ -188,8 +188,8 @@ class FactorEF(GrossEnergy):
         Consumo potencial de materia seca para 3A1aii Ganado Bovino Vacas de Baja Producción
         :return: cpms (kg día -1 )
         """
-        cpms = ((self.weight ** 0.75) * (0.14652 * (self.maintenance() / 4.184)) -
-                (0.0517 * (self.maintenance() / 4.184) ** 2) - 0.0074 + (0.305 * self.fcm) + self.ajl) * \
+        cpms = ((self.weight ** 0.75) * (0.14652 * (self.enmf / 4.184)) -
+                (0.0517 * (self.enmf / 4.184) ** 2) - 0.0074 + (0.305 * self.fcm) + self.ajl) * \
                (1 - (self.rcms / 100) * (self.ta - self.tc))
         return cpms
 
@@ -199,8 +199,8 @@ class FactorEF(GrossEnergy):
         :return: cpms (kg día -1 )
         """
 
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.04997 * ((self.maintenance() / 4.184) ** 2) + 0.04631) /
-                (self.maintenance() / 4.184)) * (1 - (self.rcms / 100) * (self.ta - self.tc)) + \
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.04997 * ((self.enmf / 4.184) ** 2) + 0.04631) /
+                (self.enmf / 4.184)) * (1 - (self.rcms / 100) * (self.ta - self.tc)) + \
                (0.2 * (self.milk / 365))
         return cpms
 
@@ -218,10 +218,9 @@ class FactorEF(GrossEnergy):
         :return: cpms (kg día -1 )
         """
 
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
-                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.1128) *
-                                                            self.bfaf_calc() * self.bi *
-                                                            (1 - (self.rcms / 100) * (self.ta - self.tc)))))
+        cpms = ((self.weight * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) - (0.0466 * ((self.enmf / 4.184) ** 2))
+                                                  - 0.1128) / (self.enmf / 4.184)) * self.bfaf_calc() \
+                * self.bi * (1 - (self.rcms / 100) * (self.ta - self.tc))
         return cpms
 
     def cpmsgbtr(self):
@@ -229,9 +228,9 @@ class FactorEF(GrossEnergy):
         Consumo potencial de materia seca para 3A1avi Ganado Bovino Terneras de remplazo
         :return: cpms (kg día -1 )
         """
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
-                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.0869) /
-                                                            (self.maintenance() / 4.184)) * self.bfaf_calc() * self.bi *
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.enmf / 4.184) -
+                                                            (0.0466 * ((self.enmf / 4.184) ** 2) - 0.0869) /
+                                                            (self.enmf / 4.184)) * self.bfaf_calc() * self.bi *
                                                   (1 - (self.rcms / 100) * (self.ta - self.tc))))
         return cpms
 
@@ -240,16 +239,16 @@ class FactorEF(GrossEnergy):
         Consumo potencial de materia seca para 3A1avii Ganado Bovino Ganado de engorde
         :return: cpms (kg día -1 )
         """
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.maintenance() / 4.184) -
-                                                            (0.0466 * ((self.maintenance() / 4.184) ** 2) - 0.0869) /
-                                                            (self.maintenance() / 4.184)) * self.bfaf_calc() * self.bi *
+        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.enmf / 4.184) -
+                                                            (0.0466 * ((self.enmf / 4.184) ** 2) - 0.0869) /
+                                                            (self.enmf / 4.184)) * self.bfaf_calc() * self.bi *
                                                   (1 - (self.rcms / 100) * (self.ta - self.tc))))
         return cpms
 
 
 def main():
-    ef = FactorEF(at_id=1, ca_id=1, coe_act_id=2, ta=13, pf=100, ps=0, vp_id=1, vs_id=40, weight=500,
-                  adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=50, cs_id=1, ym_id=4)
+    ef = FactorEF(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
+                  coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=40, ta=14)
     fe = ef.gbvap_ef()
     print(f"factor de emision: {round(fe, 2)}")
 
