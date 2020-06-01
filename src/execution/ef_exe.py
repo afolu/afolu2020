@@ -31,7 +31,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -50,7 +50,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -69,7 +69,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -88,7 +88,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -107,7 +107,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -126,7 +126,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
@@ -145,7 +145,7 @@ def ef_execution(**kwargs):
         print(f"CF={cf}")
         print(f"CC={cc}")
         print("Punto de control")
-        print(f"CMS={cpms}")
+        print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
