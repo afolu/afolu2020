@@ -220,7 +220,7 @@ class FactorEF(GrossEnergy):
 
         cpms = ((self.weight * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) - (0.0466 * ((self.enmf / 4.184) ** 2))
                                                   - 0.1128) / (self.enmf / 4.184)) * self.bfaf_calc() \
-                * self.bi * (1 - (self.rcms / 100) * (self.ta - self.tc))
+               * self.bi * (1 - (self.rcms / 100) * (self.ta - self.tc))
         return cpms
 
     def cpmsgbtr(self):
@@ -228,10 +228,9 @@ class FactorEF(GrossEnergy):
         Consumo potencial de materia seca para 3A1avi Ganado Bovino Terneras de remplazo
         :return: cpms (kg día -1 )
         """
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.enmf / 4.184) -
-                                                            (0.0466 * ((self.enmf / 4.184) ** 2) - 0.0869) /
-                                                            (self.enmf / 4.184)) * self.bfaf_calc() * self.bi *
-                                                  (1 - (self.rcms / 100) * (self.ta - self.tc))))
+        cpms = ((self.weight * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) - (0.0466 * ((self.enmf / 4.184) ** 2))
+                                                  - 0.0869) / (self.enmf / 4.184)) * self.bfaf_calc() * self.bi \
+               * (1 - (self.rcms / 100) * (self.ta - self.tc))
         return cpms
 
     def cpmsgbge(self):
@@ -239,10 +238,9 @@ class FactorEF(GrossEnergy):
         Consumo potencial de materia seca para 3A1avii Ganado Bovino Ganado de engorde
         :return: cpms (kg día -1 )
         """
-        cpms = (((self.weight * 0.96) ** 0.75) * (0.2435 * ((self.enmf / 4.184) -
-                                                            (0.0466 * ((self.enmf / 4.184) ** 2) - 0.0869) /
-                                                            (self.enmf / 4.184)) * self.bfaf_calc() * self.bi *
-                                                  (1 - (self.rcms / 100) * (self.ta - self.tc))))
+        cpms = ((self.weight * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) - (0.0466 * ((self.enmf / 4.184) ** 2))
+                                                  - 0.0869) / (self.enmf / 4.184)) * self.bfaf_calc() * self.bi \
+               * (1 - (self.rcms / 100) * (self.ta - self.tc))
         return cpms
 
 
