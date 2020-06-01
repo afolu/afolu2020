@@ -54,14 +54,22 @@ class GrossEnergy(object):
         self.id_cs = cs_id
         self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
-        self.edr_f, self.ebf, self.fdnf, self.fdaf = db_utils.get_from_grass_type(self.vp_id)
-        self.edr_s, self.ebs, self.fdns, self.fdas = db_utils.get_from_grass_type(self.vs_id)
+        self.edr_f, self.ebf, self.fdnf, self.fdaf, self.enmf = db_utils.get_from_grass_type(self.vp_id)
+        self.edr_s, self.ebs, self.fdns, self.fdas, self.enms = db_utils.get_from_grass_type(self.vs_id)
+        if ca_id == 1 and self.ta > self.tc:
+            self.rcms = 2
+        elif ca_id == 2 and self.ta > self.tc:
+            self.rcms = 1.5
+        elif ca_id == 3 and self.tc >= 25.0:
+            self.rcms = 1
+        else:
+            self.rcms = 1
         self.dep = self.d_ep()
         self.reg = self.reg_rel()
         self.rem = self.rem_rel()
         self.ca = db_utils.get_from_ac_table(self.ac_id)
         self.cp = db_utils.get_from_cp_table(self.cp_id)
-        self.ne = self.energy_selection()
+        self.tge = self.energy_selection()
 
     def d_ep(self):
         """
@@ -229,7 +237,9 @@ class GrossEnergy(object):
 
 
 def main():
-    ge = GrossEnergy(at_id=1, ca_id=1, milk=3660, grease=3.2)
+    ge = GrossEnergy(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
+                     coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=40, ta=14.0)
+    ge.tge
     me = ge.maintenance()
     ae = ge.activity()
     preg = ge.pregnancy()
