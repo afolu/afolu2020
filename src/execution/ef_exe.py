@@ -17,7 +17,7 @@ def ef_execution(**kwargs):
     """
     ef = FactorEF(**kwargs)
     if kwargs['at_id'] == 1:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbvap_ef()
         cpms = ef.cpmsgbvap()
         cms = ef.cms
@@ -36,7 +36,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 2:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbvbp_ef()
         cpms = ef.cpmsgbvbp()
         cms = ef.cms
@@ -55,7 +55,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 3:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbvpc_ef()
         cpms = ef.cpmsgbpc()
         cms = ef.cms
@@ -74,7 +74,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 4:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbtpfr_ef()
         cpms = ef.cpmsgbtfr()
         cms = ef.cms
@@ -93,7 +93,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 5:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbtpd_ef()
         cpms = ef.cpmsgbtp()
         cms = ef.cms
@@ -112,7 +112,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 6:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbtr_ef()
         cpms = ef.cpmsgbtr()
         cms = ef.cms
@@ -131,7 +131,7 @@ def ef_execution(**kwargs):
         print(f"DPCMS={dpcms}")
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
     elif kwargs['at_id'] == 7:
-        ceb = ef.ne
+        ceb = ef.tge
         fe = ef.gbge_ef()
         cpms = ef.cpmsgbge()
         cms = ef.cms
@@ -176,8 +176,8 @@ def create_parser():
 def main():
     args = create_parser()
     ef_execution(**vars(args))
-    # # ef_execution(at_id=7, ca_id=1, coe_act_id=2, ta=18, pf=100, ps=0, vp_id=1, vs_id=40, weight=400,
-    #              adult_w=550, cp_id=2, gan=0, milk=3660, grease=3.2, ht=50.0, cs_id=1)
+    # ef_execution(at_id=5, ca_id=2, weight=110.0, adult_w=577.5, milk=560, grease=3.5, cp_id=1, cs_id=2,
+    #              coe_act_id=2, pf=100, ps=0, vp_id=15, vs_id=40, ta=21.0, gan=0.5, )
     pass
 
 
