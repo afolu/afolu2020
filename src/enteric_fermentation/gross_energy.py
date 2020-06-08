@@ -55,7 +55,7 @@ class GrossEnergy(object):
         self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
         self.edr_f, self.ebf, self.fdnf, self.fdaf, self.enmf = db_utils.get_from_grass_type(self.vp_id)
-        self.edr_s, self.ebs, self.fdns, self.fdas, self.enms = db_utils.get_from_grass_type(self.vs_id)
+        self.edr_s, self.ebs, self.fdns, self.fdas, self.enms = db_utils.get_from_suplement_type(self.vs_id)
         if ca_id == 1 and self.ta > self.tc:
             self.rcms = 2
         elif ca_id == 2 and self.ta > self.tc:
@@ -239,7 +239,6 @@ class GrossEnergy(object):
 def main():
     ge = GrossEnergy(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
                      coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=40, ta=14.0)
-    ge.tge
     me = ge.maintenance()
     ae = ge.activity()
     preg = ge.pregnancy()
