@@ -130,7 +130,7 @@ def get_from_suplement_type(id_):
     conn = pg_connection()
     with conn as connection:
         query = """
-                SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
+                SELECT edt_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
                 FROM suplemento
                 WHERE id_variedad = '{0}'
                 """.format(id_)
