@@ -126,6 +126,25 @@ def get_from_grass_type(id_):
     return edr, ebp, fdn, fda, enm
 
 
+def get_from_suplement_type(id_):
+    conn = pg_connection()
+    with conn as connection:
+        query = """
+                SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
+                FROM suplemento
+                WHERE id_variedad = '{0}'
+                """.format(id_)
+        cur = connection.cursor()
+        cur.execute(query)
+        res = cur.fetchall()
+        edr: float = res[0][0]
+        ebp: float = res[0][1]
+        fdn: float = res[0][2]
+        fda: float = res[0][3]
+        enm: float = res[0][4]
+    return edr, ebp, fdn, fda, enm
+
+
 def get_from_ac_table(ac_id):
     """
     Get data from coeficiente de actividad table
