@@ -132,7 +132,7 @@ def get_from_suplement_type(id_):
         query = """
                 SELECT edt_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
                 FROM suplemento
-                WHERE id_variedad = '{0}'
+                WHERE id_suplemento = '{0}'
                 """.format(id_)
         cur = connection.cursor()
         cur.execute(query)
