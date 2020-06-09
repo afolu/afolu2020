@@ -14,16 +14,22 @@ class FactorEF(GrossEnergy):
         """
         super().__init__(**kwargs)
         self.gepd = self.gepd_calc()
-        self.cms = self.cms_calc()
         self.fda = self.fda_calc()
         self.fdn = self.fdn_calc()
-        self.ym = self.ym_calc()
         self.fcm = self.fcm_calc()
+        if self.at_id != 5:
+            self.eqsbw = self.eqsbw_calc()
+            self.cms = self.cms_calc()
+            self.ym = self.ym_calc()
+        else:
+            self.eqsbw = self.eqsbw_calc_tp()
+            self.cms = self.cms_calc_tp()
+            self.ym = self.ym_calc_tp()
+
         if self.milk / 365 >= 11.5:
             self.ajl = 1.7
         else:
             self.ajl = 0
-        self.eqsbw = self.eqsbw_calc()
 
     def fda_calc(self):
         """
@@ -43,11 +49,20 @@ class FactorEF(GrossEnergy):
 
     def ym_calc(self):
         """
-        Cálculo del Ym
+        Cálculo del Ym para todas las categoría diferentes a 3A1av Ganado Bovino Terneros pre-destetos
         :return: ym
         """
         ym = ((3.41 + 0.52 * self.cms - 0.996 * (self.cms * self.fda / 100) +
                1.15 * (self.cms * self.fdn / 100)) * 100) / self.tge
+        return ym
+
+    def ym_calc_tp(self):
+        """
+        Cálculo del Ym para la categoría  3A1av Ganado Bovino Terneros pre-destetos
+        :return: ym
+        """
+        ym = ((3.41 + 0.52 * self.cms - 0.996 * (self.cms * self.fda / 100) +
+               1.15 * (self.cms * self.fdn / 100)) * 100) / (self.gepd * self.cms)
         return ym
 
     def eqsbw_calc(self):
@@ -58,6 +73,14 @@ class FactorEF(GrossEnergy):
         pev = (self.weight * 0.96) * 400 / (self.adult_w * 0.96)
         return pev
 
+    def eqsbw_calc_tp(self):
+        """
+        Peso equivalente vacío
+        :return:
+        """
+        pev = (self.weight + (self.gan * 365) * 0.96) * 435 / (self.adult_w * 0.96)
+        return pev
+
     def bfaf_calc(self):
         """
         Factor de ajuste por grasa corporal
@@ -66,6 +89,20 @@ class FactorEF(GrossEnergy):
         if self.weight > 350:
             fagc = 0.7714 + (0.00196 * (self.weight * 0.96 * self.eqsbw) / (self.adult_w * 0.96)) - \
                    (0.000000371 * (self.weight * 0.96 * self.eqsbw) / ((self.adult_w * 0.96) ** 2))
+        else:
+            fagc = 1
+        return fagc
+
+    def bfaf_calc_tp(self):
+        """
+        Factor de ajuste por grasa corporal
+        :return:
+        """
+        if self.weight > 350:
+            fagc = 0.7714 + (((0.00196 * (self.weight + (self.gan * 365) * 0.96)) * self.eqsbw) /
+                             (self.adult_w * 0.96)) - (0.000000371 * (((self.weight +
+                                                                        (self.gan * 365)) * 0.96) * self.eqsbw) /
+                                                       ((self.adult_w * 0.96) ** 2))
         else:
             fagc = 1
         return fagc
@@ -149,6 +186,18 @@ class FactorEF(GrossEnergy):
         """
         cms = self.tge / self.gepd
         return cms
+
+    def cms_calc_tp(self):
+        """
+        Consumo de materia seca (calculado a través del consumo de energía)
+        :return: cms (kg dia-1)
+        """
+        cpmtp = ((self.weight + (self.gan * 365) * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) -
+                                                                      (0.0466 * ((self.enmf / 4.184) ** 2))
+                                                                      - 0.0869) / (
+                                                                             self.enmf / 4.184)) * self.bfaf_calc_tp() \
+            * self.bi * (1 - (self.rcms / 100) * (self.ta - self.tc))
+        return cpmtp
 
     def cms_pv_calc(self):
         """
@@ -246,7 +295,7 @@ class FactorEF(GrossEnergy):
 
 def main():
     ef = FactorEF(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
-                  coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=40, ta=14)
+                  coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0)
     fe = ef.gbvap_ef()
     print(f"factor de emision: {round(fe, 2)}")
 
