@@ -23,7 +23,8 @@ class FactorEF(GrossEnergy):
             self.ym = self.ym_calc()
         else:
             self.eqsbw = self.eqsbw_calc_tp()
-            self.cms = self.cms_calc_tp()
+            self.cms_tp = self.cms_calc_tp()
+            self.cms = self.cms_calc()
             self.ym = self.ym_calc_tp()
 
         if self.milk / 365 >= 11.5:
@@ -61,8 +62,8 @@ class FactorEF(GrossEnergy):
         Cálculo del Ym para la categoría  3A1av Ganado Bovino Terneros pre-destetos
         :return: ym
         """
-        ym = ((3.41 + 0.52 * self.cms - 0.996 * (self.cms * self.fda / 100) +
-               1.15 * (self.cms * self.fdn / 100)) * 100) / (self.gepd * self.cms)
+        ym = ((3.41 + 0.52 * self.cms_tp - 0.996 * (self.cms_tp * self.fda / 100) +
+               1.15 * (self.cms_tp * self.fdn / 100)) * 100) / (self.gepd * self.cms_tp)
         return ym
 
     def eqsbw_calc(self):
@@ -76,9 +77,9 @@ class FactorEF(GrossEnergy):
     def eqsbw_calc_tp(self):
         """
         Peso equivalente vacío
-        :return:
+        :return: kg
         """
-        pev = (self.weight + (self.gan * 365) * 0.96) * 435 / (self.adult_w * 0.96)
+        pev = (self.weight + (self.gan * 365) * 0.96) * (435 / (self.adult_w * 0.96))
         return pev
 
     def bfaf_calc(self):
@@ -294,9 +295,9 @@ class FactorEF(GrossEnergy):
 
 
 def main():
-    ef = FactorEF(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
-                  coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0)
-    fe = ef.gbvap_ef()
+    ef = FactorEF(at_id=5, ca_id=2, weight=110, adult_w=577, milk=545, grease=3.5, cp_id=1, cs_id=2,
+                  coe_act_id=3, pf=100, ps=0, vp_id=15, vs_id=1, ta=16, ht=0.0, sp=2)
+    fe = ef.gbtpd_ef()
     print(f"factor de emision: {round(fe, 2)}")
 
 
