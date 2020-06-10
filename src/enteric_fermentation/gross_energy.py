@@ -31,52 +31,54 @@ class GrossEnergy(object):
         :param ht: Horas de trabajo del animal
         :param cs_id: Indice de condicion sexual
         """
-        self.at_id = at_id
-        self.ca_id = ca_id
+        self.at_id: int = at_id
+        self.ca_id: int = ca_id
         if self.at_id == 1:
             assert self.at_id == 1 & self.ca_id == 1, "La categoria animal debe ser Bos Taurus"
-        self.ta = ta
+        self.ta: float = ta
         assert -10 <= self.ta <= 50.0, "Verifique la temperatura ambiente. El rango permitido es entre -10 y 50 °C "
-        self.pf = pf
+        self.pf: float = pf
         assert 0 <= self.pf <= 100, "Verifique el porcentaje de forraje. El rango permitido es entre 0 y 100%"
         self.ps = ps
         assert 0 <= self.ps <= 100, "Verifique el porcentaje de Suplemento. El rango permitido es entre 0 y 100%"
-        self.vp_id = vp_id
-        self.vs_id = vs_id
-        self.weight = weight
-        self.adult_w = adult_w
-        self.cp_id = cp_id
-        self.gan = gan
-        self.milk = milk
-        self.grease = grease
-        self.ac_id = coe_act_id
-        self.ht = ht
-        self.id_cs = cs_id
+        self.vp_id: int = vp_id
+        self.vs_id: int = vs_id
+        self.weight: float = weight
+        self.adult_w: float = adult_w
+        self.cp_id: int = cp_id
+        self.gan: float = gan
+        self.milk: float = milk
+        self.grease: float = grease
+        self.ac_id: int = coe_act_id
+        self.ht: float = ht
+        self.id_cs: int = cs_id
         self.a1, self.tc, self.rcms, self.bi = db_utils.get_from_ca_table(self.ca_id)
         self.fcs = db_utils.get_from_cs_table(self.id_cs)
-        self.edr_f, self.ebf, self.fdnf, self.fdaf, self.enmf = db_utils.get_from_grass_type(self.vp_id)
-        self.edr_s, self.ebs, self.fdns, self.fdas, self.enms = db_utils.get_from_suplement_type(self.vs_id)
+        self.edr_f, self.ebf, self.fdnf, self.fdaf, self.enmf, self.cen_f, self.pc_f = \
+            db_utils.get_from_grass_type(self.vp_id)
+        self.edr_s, self.ebs, self.fdns, self.fdas, self.enms, self.cen_s, self.pc_s = \
+            db_utils.get_from_suplement_type(self.vs_id)
         if ca_id == 1 and self.ta > self.tc:
-            self.rcms = 2
+            self.rcms: float = 2
         elif ca_id == 2 and self.ta > self.tc:
-            self.rcms = 1.5
+            self.rcms: float = 1.5
         elif ca_id == 3 and self.tc >= 25.0:
-            self.rcms = 1
+            self.rcms: float = 1
         else:
             self.rcms = 1
-        self.dep = self.d_ep()
-        self.reg = self.reg_rel()
-        self.rem = self.rem_rel()
-        self.ca = db_utils.get_from_ac_table(self.ac_id)
-        self.cp = db_utils.get_from_cp_table(self.cp_id)
-        self.tge = self.energy_selection()
+        self.dep: float = self.d_ep()
+        self.reg: float = self.reg_rel()
+        self.rem: float = self.rem_rel()
+        self.ca: float = db_utils.get_from_ac_table(self.ac_id)
+        self.cp: float = db_utils.get_from_cp_table(self.cp_id)
+        self.tge: float = self.energy_selection()
 
     def d_ep(self):
         """
         Digestibilidad de la dieta - dep
         :return:
         """
-        dep = (self.edr_f * 100 / self.ebf) * self.pf / 100 + (self.edr_s * 100 / self.ebs) * self.ps / 100
+        dep: float = (self.edr_f * 100 / self.ebf) * self.pf / 100 + (self.edr_s * 100 / self.ebs) * self.ps / 100
         return dep
 
     def rem_rel(self):
@@ -85,7 +87,7 @@ class GrossEnergy(object):
         y la energía digerible consumida (rem)
         :return: rem
         """
-        rem = (1.123 - (4.092 * 0.001 * self.dep) +
+        rem: float = (1.123 - (4.092 * 0.001 * self.dep) +
                (1.126 * 0.00001 * (self.dep ** 2))) - (25.4 / self.dep)
         return rem
 
@@ -95,7 +97,7 @@ class GrossEnergy(object):
         la energía digerible consumida
         :return: reg
         """
-        reg = (1.164 - (5.16 * 0.001 * self.dep) +
+        reg: float = (1.164 - (5.16 * 0.001 * self.dep) +
                (1.308 * 0.00001 * (self.dep ** 2)) - (37.4 / self.dep))
         return reg
 
@@ -104,7 +106,7 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta para mantenimiento GEm o em
         :return: em (Mj día -1)
         """
-        em = (self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta))) / self.rem / (self.dep / 100)
+        em: float = (self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta))) / self.rem / (self.dep / 100)
         return em
 
     def activity(self):
@@ -112,7 +114,7 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta de actividad GEa o ea
         :return: ea (Mj día -1)
         """
-        em = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.ca / self.rem / \
+        em: float = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.ca / self.rem / \
              (self.dep / 100)
         return em
 
@@ -121,7 +123,7 @@ class GrossEnergy(object):
         Cálculo del requerimiento de energía bruta para lactancia o producción de leche GEl o el
         :return: el (Mj día -1)
         """
-        el = (self.milk / 365) * (1.47 + 0.4 * self.grease) / self.rem / (self.dep / 100)
+        el: float = (self.milk / 365) * (1.47 + 0.4 * self.grease) / self.rem / (self.dep / 100)
         return el
 
     def work(self):
@@ -129,7 +131,7 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para el trabajo
         :return: ew
         """
-        ew = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * 0.1 * self.ht / self.rem / \
+        ew : float = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * 0.1 * self.ht / self.rem / \
              (self.dep / 100)
         return ew
 
@@ -138,7 +140,7 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para gestación o preñez
         :return: ep (Mj día -1)
         """
-        ep = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.cp / self.rem / \
+        ep: float = ((self.weight ** 0.75) * (self.a1 + (0.0029288 * (self.tc - self.ta)))) * self.cp / self.rem / \
              (self.dep / 100)
         return ep
 
@@ -147,7 +149,7 @@ class GrossEnergy(object):
         Requerimiento de energía bruta para ganancia de peso o crecimiento
         :return:GEg o eg (Mj día -1)
         """
-        eg = ((22.02 * (self.weight / (self.fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097) / self.reg / \
+        eg: float = ((22.02 * (self.weight / (self.fcs * self.adult_w)) ** 0.75) * self.gan ** 1.097) / self.reg / \
              (self.dep / 100)
         return eg
 
@@ -156,7 +158,7 @@ class GrossEnergy(object):
         Aporte de energía bruta de la leche consumida por el ternero.
         :return: me (Mj día -1)
         """
-        me = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 0.001
+        me: float = (self.milk / 365) * ((44.01 * self.grease + 163.56) * 4.184 / 0.4536) * 0.001
         return me
 
     def ne_vap(self):
@@ -164,7 +166,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1ai Ganado Bovino Vacas de Alta Producción
         :return:
         """
-        en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
+        en: float = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
         return en
 
     def ne_vbp(self):
@@ -180,7 +182,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1aiii Ganado Bovino Vacas para Producción de Carne
         :return: en
         """
-        en = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
+        en: float = self.maintenance() + self.activity() + self.breastfeeding() + self.pregnancy() + self.work()
         return en
 
     def ne_tprf(self):
@@ -188,7 +190,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1aiv Ganado Bovino Toros utilizados con fines reproductivos
         :return: en
         """
-        en = self.maintenance() + self.activity() + self.work()
+        en: float = self.maintenance() + self.activity() + self.work()
         return en
 
     def ne_tpd(self):
@@ -196,7 +198,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1av Ganado Bovino Terneros pre-destetos
         :return: en
         """
-        en = self.maintenance() + self.activity() + self.work() + self.grow() - self.milk_energy()
+        en: float = self.maintenance() + self.activity() + self.work() + self.grow() - self.milk_energy()
         return en
 
     def ne_tr(self):
@@ -204,7 +206,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1avi Ganado Bovino Terneras de remplazo
         :return:
         """
-        en = self.maintenance() + self.activity() + self.work() + self.grow()
+        en: float = self.maintenance() + self.activity() + self.work() + self.grow()
         return en
 
     def ne_ge(self):
@@ -212,7 +214,7 @@ class GrossEnergy(object):
         Consumo total energia bruta total para la categoría 3A1avii Ganado Bovino Ganado de engorde
         :return:
         """
-        en = self.maintenance() + self.activity() + self.work() + self.grow()
+        en: float = self.maintenance() + self.activity() + self.work() + self.grow()
         return en
 
     def energy_selection(self):
@@ -239,13 +241,13 @@ class GrossEnergy(object):
 def main():
     ge = GrossEnergy(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
                      coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=40, ta=14.0)
-    me = ge.maintenance()
-    ae = ge.activity()
-    preg = ge.pregnancy()
-    milk = ge.breastfeeding()
-    grow = ge.grow()
-    breastfeeding = ge.breastfeeding()
-    work = ge.work()
+    me: float = ge.maintenance()
+    ae: float = ge.activity()
+    preg: float = ge.pregnancy()
+    milk: float = ge.breastfeeding()
+    grow: float = ge.grow()
+    breastfeeding: float = ge.breastfeeding()
+    work: float = ge.work()
     print(me + ae + preg + milk + grow + breastfeeding + work)
 
 
