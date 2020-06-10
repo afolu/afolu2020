@@ -111,7 +111,8 @@ def get_from_grass_type(id_):
     conn = pg_connection()
     with conn as connection:
         query = """
-                SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
+                SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes, 
+                ceniza_dieta, pc_dieta
                 FROM variedad_pasto
                 WHERE id_variedad = '{0}'
                 """.format(id_)
@@ -123,14 +124,17 @@ def get_from_grass_type(id_):
         fdn: float = res[0][2]
         fda: float = res[0][3]
         enm: float = res[0][4]
-    return edr, ebp, fdn, fda, enm
+        cen: float = res[0][5]
+        pcd: float = res[0][6]
+    return edr, ebp, fdn, fda, enm, cen, pcd
 
 
 def get_from_suplement_type(id_):
     conn = pg_connection()
     with conn as connection:
         query = """
-                SELECT edt_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes
+                SELECT edt_rumiantes, energia_bruta_pasto, fdn_dieta, fda, 
+                enm_rumiantes, ceniza_dieta, pc_dieta
                 FROM suplemento
                 WHERE id_suplemento = '{0}'
                 """.format(id_)
@@ -142,7 +146,9 @@ def get_from_suplement_type(id_):
         fdn: float = res[0][2]
         fda: float = res[0][3]
         enm: float = res[0][4]
-    return edr, ebp, fdn, fda, enm
+        cen: float = res[0][5]
+        pcd: float = res[0][6]
+    return edr, ebp, fdn, fda, enm, cen, pcd
 
 
 def get_from_ac_table(ac_id):
