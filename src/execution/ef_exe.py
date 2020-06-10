@@ -183,15 +183,39 @@ def create_parser():
     parser.add_argument('-grease', type=float, help='Porcentaje de grasa en la leche')
     parser.add_argument('-ht', type=float, help='Horas de trabajo del animal')
     parser.add_argument('-cs_id', type=int, help='Indice de condicion sexual')
-    parser.add_argument('-sp_id', type=int, help='Sistema de producción. 1 -> Alta produccion. 2 -> Baja producción ')
+    parser.add_argument('-sp_id', type=int, help='Sistema de producción.')
+    parser.add_argument('-sga_id', type=int, help='Sistema de producción Gestion de estiercol A')
+    parser.add_argument('-sgb_id', type=int, help='Sistema de Gestion de estiercol B')
     return parser.parse_args()
 
 
 def main():
     args = create_parser()
-    ef_execution(**vars(args))
-    # ef_execution(at_id=5, ca_id=2, weight=110, adult_w=577, milk=545, grease=3.5, cp_id=1, cs_id=2,
-    #              coe_act_id=3, pf=100, ps=0, vp_id=15, vs_id=1, ta=16, ht=0.0, gan=0.5, sp=2)
+    arg = vars(args)
+    ef_execution(at_id=arg['at_id'],
+                 ca_id=arg['ca_id'],
+                 coe_act_id=arg['coe_act_id'],
+                 ta=arg['ta'],
+                 pf=arg['pf'],
+                 ps=arg['ps'],
+                 vp_id=arg['vp_id'],
+                 vs_id=arg['vs_id'],
+                 weight=arg['wg'],
+                 adult_w=arg['adult_wg'],
+                 cp_id=arg['cp_id'],
+                 gan=arg['gn_wg'],
+                 milk=arg['milk'],
+                 grease=arg['grease'],
+                 ht=arg['ht'],
+                 cs_id=arg['cs_id'],
+                 sp=arg['sp_id'],
+                 spsga=arg['sga_id'],
+                 spsgb=arg['sgb_id'])
+    #
+    # ef_execution(at_id=args[])
+    # ef_execution(at_id=5, ca_id=2, coe_act_id=3, ta=16, pf=100, ps=0, vp_id=15, vs_id=1, weight=110,
+    #              adult_w=577, cp_id=1, gan=0.5, milk=560, grease=3.5, ht=0.0, cs_id=2, sp=2, spsga=20.0,
+    #                  spsgb=80.0)
     pass
 
 
