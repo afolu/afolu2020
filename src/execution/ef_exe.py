@@ -17,14 +17,15 @@ def ef_execution(**kwargs):
     """
     ef = FactorEF(**kwargs)
     if kwargs['at_id'] == 1:
-        ceb = ef.tge
-        fe = ef.gbvap_ef()
-        cpms = ef.cpmsgbvap()
-        cms = ef.cms
-        cf = ef.cmcf_calc()
-        cc = ef.cmcs_calc()
-        ccms = cpms - cms
-        dpcms = ((cms * 100 / cpms) - 100) / 100
+        ceb: float = ef.tge
+        fe: float = ef.gbvap_ef()
+        cpms: float = ef.cpmsgbvap()
+        cms: float = ef.cms
+        cf: float = ef.cmcf_calc()
+        cc: float = ef.cmcs_calc()
+        ccms: float = cpms - cms
+        dpcms: float = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -34,16 +35,18 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 2:
-        ceb = ef.tge
-        fe = ef.gbvbp_ef()
-        cpms = ef.cpmsgbvbp()
-        cms = ef.cms
-        cf = ef.cmcf_calc()
-        cc = ef.cmcs_calc()
-        ccms = cpms - cms
-        dpcms = ((cms * 100 / cpms) - 100) / 100
+        ceb: float = ef.tge
+        fe: float = ef.gbvbp_ef()
+        cpms: float = ef.cpmsgbvbp()
+        cms: float = ef.cms
+        cf: float = ef.cmcf_calc()
+        cc: float = ef.cmcs_calc()
+        ccms: float = cpms - cms
+        dpcms: float = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -53,7 +56,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 3:
         ceb = ef.tge
         fe = ef.gbvpc_ef()
@@ -63,6 +67,7 @@ def ef_execution(**kwargs):
         cc = ef.cmcs_calc()
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -72,7 +77,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 4:
         ceb = ef.tge
         fe = ef.gbtpfr_ef()
@@ -82,6 +88,7 @@ def ef_execution(**kwargs):
         cc = ef.cmcs_calc()
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -91,7 +98,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 5:
         ceb = ef.tge
         fe = ef.gbtpd_ef()
@@ -101,6 +109,7 @@ def ef_execution(**kwargs):
         cc = ef.cmcs_calc()
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -110,7 +119,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 6:
         ceb = ef.tge
         fe = ef.gbtr_ef()
@@ -120,6 +130,7 @@ def ef_execution(**kwargs):
         cc = ef.cmcs_calc()
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
+        ym: float = ef.ym
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -129,7 +140,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
     elif kwargs['at_id'] == 7:
         ceb = ef.tge
         fe = ef.gbge_ef()
@@ -139,7 +151,7 @@ def ef_execution(**kwargs):
         cc = ef.cmcs_calc()
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
-        print(f"FE={fe}")
+        ym: float = ef.ym
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
         print(f"CF={cf}")
@@ -148,7 +160,8 @@ def ef_execution(**kwargs):
         print(f"CPMS={cpms}")
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms
+        print(f'Ym={ym}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
 
 
 def create_parser():
@@ -170,14 +183,15 @@ def create_parser():
     parser.add_argument('-grease', type=float, help='Porcentaje de grasa en la leche')
     parser.add_argument('-ht', type=float, help='Horas de trabajo del animal')
     parser.add_argument('-cs_id', type=int, help='Indice de condicion sexual')
+    parser.add_argument('-sp_id', type=int, help='Sistema de producción. 1 -> Alta produccion. 2 -> Baja producción ')
     return parser.parse_args()
 
 
 def main():
-    args = create_parser()
-    ef_execution(**vars(args))
-    # ef_execution(at_id=5, ca_id=2, weight=110.0, adult_w=577.5, milk=560, grease=3.5, cp_id=1, cs_id=2,
-    #              coe_act_id=2, pf=100, ps=0, vp_id=15, vs_id=40, ta=21.0, gan=0.5, )
+    # args = create_parser()
+    # ef_execution(**vars(args))
+    ef_execution(at_id=5, ca_id=2, weight=110, adult_w=577, milk=545, grease=3.5, cp_id=1, cs_id=2,
+                 coe_act_id=3, pf=100, ps=0, vp_id=15, vs_id=1, ta=16, ht=0.0, gan=0.5, sp=2)
     pass
 
 
