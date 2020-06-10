@@ -188,10 +188,10 @@ def create_parser():
 
 
 def main():
-    # args = create_parser()
-    # ef_execution(**vars(args))
-    ef_execution(at_id=5, ca_id=2, weight=110, adult_w=577, milk=545, grease=3.5, cp_id=1, cs_id=2,
-                 coe_act_id=3, pf=100, ps=0, vp_id=15, vs_id=1, ta=16, ht=0.0, gan=0.5, sp=2)
+    args = create_parser()
+    ef_execution(**vars(args))
+    # ef_execution(at_id=5, ca_id=2, weight=110, adult_w=577, milk=545, grease=3.5, cp_id=1, cs_id=2,
+    #              coe_act_id=3, pf=100, ps=0, vp_id=15, vs_id=1, ta=16, ht=0.0, gan=0.5, sp=2)
     pass
 
 
