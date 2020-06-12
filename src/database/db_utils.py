@@ -189,23 +189,44 @@ def get_from_cs_table(id_cs):
     return fcs
 
 
-def get_from_ym_table(ym):
+def get_from_pm_table(pm_id):
     """
-    Get data from ym table
+    Get data from produccion de metano table
     :return: cp
     """
     conn = pg_connection()
     with conn as connection:
         query = """
-        SELECT  ym_eb
-        FROM ym
-        WHERE id_ym = '{0}'
-        """.format(ym)
+        SELECT  alta_produccion, baja_produccion
+        FROM produccion_metano
+        WHERE id = '{0}'
+        """.format(pm_id)
         cur = connection.cursor()
         cur.execute(query)
         res = cur.fetchall()
-        ym = res[0][0]
-    return ym
+        ap: float = res[0][0]
+        bp: float = res[0][1]
+    return ap, bp
+
+
+def get_from_awms_table(awms_id):
+    """
+    Get data from produccion de metano table
+    :return: cp
+    """
+    conn = pg_connection()
+    with conn as connection:
+        query = """
+        SELECT  alta_prod, otras
+        FROM gestion_residuos
+        WHERE id = '{0}'
+        """.format(awms_id)
+        cur = connection.cursor()
+        cur.execute(query)
+        res = cur.fetchall()
+        ap = res[0][0]
+        bp = res[0][1]
+    return ap, bp
 
 
 def main():
