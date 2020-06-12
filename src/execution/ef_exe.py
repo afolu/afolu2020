@@ -6,16 +6,16 @@ import argparse
 
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 
-from src.enteric_fermentation.emission_factor_ef import FactorEF
+from src.manure_management.manure_mgmt import FeGe
 
 
 def ef_execution(**kwargs):
     """
 
-    :param kwargs: arguments contained in FE script
+    :param kwargs: arguments contained in FE and GE  script
     :return: emission factor, gross energy,
     """
-    ef = FactorEF(**kwargs)
+    ef = FeGe(**kwargs)
     if kwargs['at_id'] == 1:
         ceb: float = ef.tge
         fe: float = ef.gbvap_ef()
@@ -26,6 +26,7 @@ def ef_execution(**kwargs):
         ccms: float = cpms - cms
         dpcms: float = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -36,7 +37,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 2:
         ceb: float = ef.tge
         fe: float = ef.gbvbp_ef()
@@ -47,6 +49,7 @@ def ef_execution(**kwargs):
         ccms: float = cpms - cms
         dpcms: float = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -57,7 +60,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 3:
         ceb = ef.tge
         fe = ef.gbvpc_ef()
@@ -68,6 +72,7 @@ def ef_execution(**kwargs):
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -78,7 +83,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 4:
         ceb = ef.tge
         fe = ef.gbtpfr_ef()
@@ -89,6 +95,7 @@ def ef_execution(**kwargs):
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -99,7 +106,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 5:
         ceb = ef.tge
         fe = ef.gbtpd_ef()
@@ -110,6 +118,7 @@ def ef_execution(**kwargs):
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -120,7 +129,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 6:
         ceb = ef.tge
         fe = ef.gbtr_ef()
@@ -131,6 +141,7 @@ def ef_execution(**kwargs):
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
         print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
@@ -141,7 +152,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 7:
         ceb = ef.tge
         fe = ef.gbge_ef()
@@ -152,6 +164,8 @@ def ef_execution(**kwargs):
         ccms = cpms - cms
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
+        fge: float = ef.ef_ge_calc()
+        print(f"FE={fe}")
         print(f"CEB={ceb}")
         print(f"CMS={cms}")
         print(f"CF={cf}")
@@ -161,7 +175,8 @@ def ef_execution(**kwargs):
         print(f"CCMS={ccms}")
         print(f"DPCMS={dpcms}")
         print(f'Ym={ym}')
-        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym
+        print(f'FGE={fge}')
+        return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
 
 
 def create_parser():
@@ -184,8 +199,14 @@ def create_parser():
     parser.add_argument('-ht', type=float, help='Horas de trabajo del animal')
     parser.add_argument('-cs_id', type=int, help='Indice de condicion sexual')
     parser.add_argument('-sp_id', type=int, help='Sistema de producción.')
-    parser.add_argument('-sga_id', type=int, help='Sistema de producción Gestion de estiercol A')
-    parser.add_argument('-sgb_id', type=int, help='Sistema de Gestion de estiercol B')
+    parser.add_argument('-sgea_id', type=int, help='Sistema de gestion de estiercol A')
+    parser.add_argument('-p_sgea', type=int, help='Porcentaje de Gestion de estiercol A')
+    parser.add_argument('-sgra_id', type=int, help='Sistema de gestion de residuos A')
+    parser.add_argument('-p_sgra', type=int, help='Porcentaje de Gestion de residuos A')
+    parser.add_argument('-sgeb_id', type=int, help='Sistema de gestion de estiercol B')
+    parser.add_argument('-p_sgeb', type=int, help='Porcentaje de Gestion de estiercol B')
+    parser.add_argument('-sgrb_id', type=int, help='Sistema de gestion de residuos B')
+    parser.add_argument('-p_sgrb', type=int, help='Porcentaje de Gestion de residuos B')
     return parser.parse_args()
 
 
@@ -208,14 +229,20 @@ def main():
                  grease=arg['grease'],
                  ht=arg['ht'],
                  cs_id=arg['cs_id'],
-                 sp=arg['sp_id'],
-                 spsga=arg['sga_id'],
-                 spsgb=arg['sgb_id'])
-    #
-    # ef_execution(at_id=args[])
-    # ef_execution(at_id=5, ca_id=2, coe_act_id=3, ta=16, pf=100, ps=0, vp_id=15, vs_id=1, weight=110,
-    #              adult_w=577, cp_id=1, gan=0.5, milk=560, grease=3.5, ht=0.0, cs_id=2, sp=2, spsga=20.0,
-    #                  spsgb=80.0)
+                 sp_id=arg['sp_id'],
+                 sgea_id=arg['sgea_id'],
+                 p_sgea=arg['p_sgea'],
+                 sgra_id=arg['sgra_id'],
+                 p_sgra=arg['p_sgra'],
+                 sgeb_id=arg['sgeb_id'],
+                 p_sgeb=arg['p_sgeb'],
+                 sgrb_id=arg['sgrb_id'],
+                 p_sgrb=arg['p_sgrb']
+                 )
+
+    # ef_execution(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
+    #              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=1, sgea_id=1, p_sgea=20.0,
+    #              sgra_id=4, p_sgra=80.0, sgeb_id=1, p_sgeb=20.0, sgrb_id=3, p_sgrb=80.0)
     pass
 
 
