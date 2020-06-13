@@ -201,10 +201,10 @@ def create_parser():
     parser.add_argument('-sp_id', type=int, help='Sistema de producción.')
     parser.add_argument('-sgea_id', type=int, help='Sistema de gestion de estiercol A')
     parser.add_argument('-sgra_id', type=int, help='Sistema de gestion de residuos A')
-    parser.add_argument('-p_sgea', type=float, help='Porcentaje de Gestion de estiercol A')
+    parser.add_argument('-p_sga', type=float, help='Porcentaje de Gestion de estiercol A')
     parser.add_argument('-sgeb_id', type=int, help='Sistema de gestion de estiercol B')
     parser.add_argument('-sgrb_id', type=int, help='Sistema de gestion de residuos B')
-    parser.add_argument('-p_sgeb', type=float, help='Porcentaje de Gestion de estiercol B')
+    parser.add_argument('-p_sgb', type=float, help='Porcentaje de Gestion de estiercol B')
     return parser.parse_args()
 
 
