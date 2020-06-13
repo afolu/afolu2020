@@ -11,18 +11,15 @@ from src.database.db_utils import get_from_pm_table, get_from_awms_table
 
 
 class FeGe(FactorEF):
-    def __init__(self, sp_id=1, sgea_id=1, p_sgea=20.0, sgra_id=4, p_sgra=80.0,
-                 sgeb_id=1, p_sgeb=20.0, sgrb_id=3, p_sgrb=80.0, **kwargs):
+    def __init__(self, sp_id=1, sgea_id=1, sgra_id=2, p_sga=20, sgeb_id=2, sgrb_id=3, p_sgb=80, **kwargs):
         super().__init__(**kwargs)
         self.sp_id: int = sp_id
         self.sgea_id: int = sgea_id
-        self.p_sgea: float = p_sgea
         self.sgra_id: int = sgra_id
-        self.p_sgra: float = p_sgra
+        self.p_sga = p_sga
         self.sgeb_id: int = sgeb_id
-        self.p_sgeb: float = p_sgeb
         self.sgrb_id: int = sgrb_id
-        self.p_sgrb: float = p_sgrb
+        self.p_sgb = p_sgb
         self.pcp: float = self.pcp_calc()
         self.eu: float = self.eu_calc()
         self.cen_p: float = self.cen_p_calc()
@@ -125,7 +122,7 @@ class FeGe(FactorEF):
         Factores de conversión de metano ponderado (%).
         :return:
         """
-        mcfp: float = self.mcf_calc(self.sgea_id) * self.p_sgea / 100 + self.mcf_calc(self.sgeb_id) * self.p_sgeb / 100
+        mcfp: float = self.mcf_calc(self.sgea_id) * self.p_sga / 100 + self.mcf_calc(self.sgeb_id) * self.p_sgb / 100
         return mcfp
 
     def pcp_calc(self):
@@ -154,7 +151,7 @@ class FeGe(FactorEF):
         desechos animales ponderado.
         :return:
         """
-        awmsp = self.awms_sel(self.sgra_id) * self.p_sgra / 100 + self.awms_sel(self.sgrb_id) * self.p_sgrb
+        awmsp = self.awms_sel(self.sgra_id) * self.p_sga / 100 + self.awms_sel(self.sgrb_id) * self.p_sgb / 100
         return awmsp
 
 

@@ -231,18 +231,16 @@ def main():
                  cs_id=arg['cs_id'],
                  sp_id=arg['sp_id'],
                  sgea_id=arg['sgea_id'],
-                 p_sgea=arg['p_sgea'],
                  sgra_id=arg['sgra_id'],
-                 p_sgra=arg['p_sgra'],
+                 p_sga=arg['p_sga'],
                  sgeb_id=arg['sgeb_id'],
-                 p_sgeb=arg['p_sgeb'],
                  sgrb_id=arg['sgrb_id'],
-                 p_sgrb=arg['p_sgrb']
+                 p_sgb=arg['p_sgb'],
                  )
 
     # ef_execution(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
-    #              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=1, sgea_id=1, p_sgea=20.0,
-    #              sgra_id=4, p_sgra=80.0, sgeb_id=1, p_sgeb=20.0, sgrb_id=3, p_sgrb=80.0)
+    #              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=1, sgea_id=1,
+    #              sgra_id=2, p_sga=20, sgeb_id=2, sgrb_id=3, p_sgb=80)
     pass
 
 
