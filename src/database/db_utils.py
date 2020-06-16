@@ -197,7 +197,7 @@ def get_from_pm_table(pm_id):
     conn = pg_connection()
     with conn as connection:
         query = """
-        SELECT  alta_produccion, baja_produccion
+        SELECT  bovino_alta_prod, bovino_otras
         FROM produccion_metano
         WHERE id = '{0}'
         """.format(pm_id)
