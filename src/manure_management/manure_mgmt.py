@@ -46,7 +46,7 @@ class FeGe(FactorEF):
         Sólidos volátiles excretados por día, kg materia seca animal-1 día-1
         :return:
         """
-        sv: float = (self.tge * (1 - (self.dep / 100) + self.eu)) * ((1 - self.cen_p / 100) / 18.45)
+        sv: float = (self.tge * (1 - (self.dep / 100)) + self.eu) * ((1 - (self.cen_p / 100)) / 18.45)
         return sv
 
     def cen_p_calc(self):
@@ -122,7 +122,7 @@ class FeGe(FactorEF):
         Factores de conversión de metano ponderado (%).
         :return:
         """
-        mcfp: float = self.mcf_calc(self.sgea_id) * self.p_sga / 100 + self.mcf_calc(self.sgeb_id) * self.p_sgb / 100
+        mcfp: float = (self.mcf_calc(self.sgea_id) * self.p_sga / 100 + self.mcf_calc(self.sgeb_id) * self.p_sgb / 100) / 100
         return mcfp
 
     def pcp_calc(self):
@@ -157,8 +157,8 @@ class FeGe(FactorEF):
 
 def main():
     ef = FeGe(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
-              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=1, sgea_id=1, p_sgea=20.0,
-              sgra_id=4, p_sgra=80.0, sgeb_id=1, p_sgeb=20.0, sgrb_id=3, p_sgrb=80.0)
+              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=2, sgea_id=1, p_sga=7,
+              sgra_id=1, p_sgb=93, sgeb_id=5, sgrb_id=5)
     ge = ef.ef_ge_calc()
     print(f"gestion de estiercol: {round(ge, 2)}")
 
