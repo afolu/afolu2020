@@ -44,3 +44,5 @@ xlrd==1.2.0
 zipp==3.1.0
 
 setuptools~=46.2.0
+plotly~=4.8.1
+dash~=1.12.0
