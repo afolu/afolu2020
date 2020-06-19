@@ -3,14 +3,14 @@
 import sys
 import os
 import pandas as pd
+sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
+
 from src.database.db_utils import pg_connection_str, pg_connection
 from src.execution.ef_exe import ef_execution
 
-sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
-conn = pg_connection_str()
-
 
 def get_data():
+    conn = pg_connection_str()
     query = "SELECT * " \
             "FROM fe_fermentacion"
     df = pd.read_sql_query(query, conn)
