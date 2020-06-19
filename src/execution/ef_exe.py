@@ -9,7 +9,7 @@ sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '.
 from src.manure_management.manure_mgmt import FeGe
 
 
-def ef_execution(**kwargs):
+def ef_execution(prnt=True, **kwargs):
     """
 
     :param kwargs: arguments contained in FE and GE  script
@@ -27,17 +27,18 @@ def ef_execution(**kwargs):
         dpcms: float = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 2:
         ceb: float = ef.tge
@@ -50,17 +51,18 @@ def ef_execution(**kwargs):
         dpcms: float = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 3:
         ceb = ef.tge
@@ -73,17 +75,18 @@ def ef_execution(**kwargs):
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 4:
         ceb = ef.tge
@@ -96,17 +99,18 @@ def ef_execution(**kwargs):
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 5:
         ceb = ef.tge
@@ -119,17 +123,18 @@ def ef_execution(**kwargs):
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 6:
         ceb = ef.tge
@@ -142,17 +147,18 @@ def ef_execution(**kwargs):
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
     elif kwargs['at_id'] == 7:
         ceb = ef.tge
@@ -165,17 +171,18 @@ def ef_execution(**kwargs):
         dpcms = ((cms * 100 / cpms) - 100) / 100
         ym: float = ef.ym
         fge: float = ef.ef_ge_calc()
-        print(f"FE={fe}")
-        print(f"CEB={ceb}")
-        print(f"CMS={cms}")
-        print(f"CF={cf}")
-        print(f"CC={cc}")
-        print("Punto de control")
-        print(f"CPMS={cpms}")
-        print(f"CCMS={ccms}")
-        print(f"DPCMS={dpcms}")
-        print(f'Ym={ym}')
-        print(f'FGE={fge}')
+        if prnt is True:
+            print(f"FE={fe}")
+            print(f"CEB={ceb}")
+            print(f"CMS={cms}")
+            print(f"CF={cf}")
+            print(f"CC={cc}")
+            print("Punto de control")
+            print(f"CPMS={cpms}")
+            print(f"CCMS={ccms}")
+            print(f"DPCMS={dpcms}")
+            print(f'Ym={ym}')
+            print(f'FGE={fge}')
         return fe, ceb, cms, cf, cc, cpms, ccms, dpcms, ym, fge
 
 
@@ -236,9 +243,9 @@ def main():
                  p_sgb=arg['p_sgb'],
                  )
 
-    # ef_execution(at_id=1, ca_id=1, weight=540.0, adult_w=600.0, milk=3660, grease=3.5, cp_id=2, cs_id=1,
-    #              coe_act_id=2, pf=80, ps=20, vp_id=15, vs_id=1, ta=14, ht=0.0, sp_id=1, sgea_id=1,
-    #              sgra_id=2, p_sga=20, sgeb_id=2, sgrb_id=3, p_sgb=80)
+    # ef_execution(at_id=5, ca_id=3, coe_act_id=3,  ta=27.1, pf=100.0, ps=0.0, vp_id=40, vs_id=1, weight=95.0,
+    #              adult_w=493.3, cp_id=1, gan=0.2, milk=440.0, grease=3.2, ht=0.0, cs_id=2, sp_id=2, sgea_id=5,
+    #              sgra_id=1, p_sga=100, sgeb_id=5, sgrb_id=5, p_sgb=0.0)
     pass
 
 
