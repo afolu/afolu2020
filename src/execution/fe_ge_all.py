@@ -22,13 +22,10 @@ def update_db(df):
     zipped = zip(df.id, df.fe_fermentacion_ent, df.ym, df.fe_gestion_est)
     tp_to_str = str(tuple(zipped))
     update = tp_to_str[1:len(tp_to_str) - 1]
-    query_ = f"""UPDATE fe_fermentacion_temporal AS fet
-                 SET fe_fermentacion_ent = v.fe_fermentacion_ent
-                 SET ym = v.ym
-                 SET fe_gestion_est = v.fe_gestion_est
-                 FROM (VALUES {update}) AS v (id, fe_fermentacion_ent, ym, fe_gestion_est)
-                 WHERE fet.id = v.id
-            """
+    query_ = f"""UPDATE fe_fermentacion_temporal AS fet 
+                 SET fe_fermentacion_ent = v.fe_fermentacion_ent, ym = v.ym, fe_gestion_est = v.fe_gestion_est 
+                 FROM (VALUES {update}) AS v (id, fe_fermentacion_ent, ym, fe_gestion_est) 
+                 WHERE fet.id = v.id """
     conn_ = pg_connection()
     with conn_ as connection:
         cur = connection.cursor()
