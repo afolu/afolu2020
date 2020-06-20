@@ -89,6 +89,7 @@ def masive_calc():
         except (IndexError, ValueError):
             pass
     update_db(df)
+    print("salida=OK")
 
 
 def main():
