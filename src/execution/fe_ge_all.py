@@ -34,32 +34,56 @@ def update_db(df):
 
 def masive_calc():
     df = get_data()
-    for index, row in df.iterrows():
+    # for index, row in df.iterrows():
+    #     try:
+    #         at_id: int = int(row['id_at'])
+    #         ca_id: int = int(row['id_ca'])
+    #         coe_act_id: int = int(row['id_coe_acti'])
+    #         ta: float = row['temp']
+    #         pf: float = row['por_pasto']
+    #         ps: float = row['por_suple']
+    #         vp_id: int = int(row['id_pasto'])
+    #         vs_id: int = int(row['id_suple'])
+    #         weight: float = row['peso']
+    #         adult_w: float = row['adult_peso']
+    #         cp_id: int = int(row['id_cp'])
+    #         gan: float = row['gn_peso']
+    #         milk: float = row['leche']
+    #         grease: float = row['grasa']
+    #         ht: float = row['ht']
+    #         cs_id: int = int(row['id_cs'])
+    #         # sp_id: int = int(row['id_prod_metano'])
+    #         # sgea_id: int = int(row['id_gestion_est1'])
+    #         # sgra_id: int = int(row['id_gestion_res1'])
+    #         # p_sga: float = row['por_gestion1']
+    #         # sgeb_id: int = int(row['id_gestion_est2'])
+    #         # sgrb_id: int = int(row['id_gestion_res2'])
+    #         # p_sgb: float = row['por_gestion2']
+    for i in df.index:
         try:
-            at_id: int = int(row['id_at'])
-            ca_id: int = int(row['id_ca'])
-            coe_act_id: int = int(row['id_coe_acti'])
-            ta: float = row['temp']
-            pf: float = row['por_pasto']
-            ps: float = row['por_suple']
-            vp_id: int = int(row['id_pasto'])
-            vs_id: int = int(row['id_suple'])
-            weight: float = row['peso']
-            adult_w: float = row['adult_peso']
-            cp_id: int = int(row['id_cp'])
-            gan: float = row['gn_peso']
-            milk: float = row['leche']
-            grease: float = row['grasa']
-            ht: float = row['ht']
-            cs_id: int = int(row['id_cs'])
-            # sp_id: int = int(row['id_prod_metano'])
-            # sgea_id: int = int(row['id_gestion_est1'])
-            # sgra_id: int = int(row['id_gestion_res1'])
-            # p_sga: float = row['por_gestion1']
-            # sgeb_id: int = int(row['id_gestion_est2'])
-            # sgrb_id: int = int(row['id_gestion_res2'])
-            # p_sgb: float = row['por_gestion2']
-
+            at_id: int = int(df.at[i, 'id_at'])
+            ca_id: int = int(df.at[i, 'id_ca'])
+            coe_act_id: int = int(df.at[i, 'id_coe_acti'])
+            ta: float = df.at[i, 'temp']
+            pf: float = df.at[i, 'por_pasto']
+            ps: float = df.at[i, 'por_suple']
+            vs_id: int = int(df.at[i, 'id_suple'])
+            vp_id: int = int(df.at[i, 'id_pasto'])
+            weight: float = df.at[i, 'peso']
+            adult_w: float = df.at[i, 'adult_peso']
+            cp_id: int = int(df.at[i, 'id_cp'])
+            gan: float = df.at[i, 'gn_peso']
+            milk: float = df.at[i, 'leche']
+            grease: float = df.at[i, 'grasa']
+            ht: float = df.at[i, 'ht']
+            cs_id: int = int(df.at[i, 'id_cs'])
+            sp_id: int = int(df.at[i, 'id_prod_metano'])
+            sgea_id: int = int(df.at[i, 'id_gestion_est1'])
+            sgra_id: int = int(df.at[i, 'id_gestion_res1'])
+            p_sga: float = df.at[i, 'por_gestion1']
+            sgeb_id: int = int(df.at[i, 'id_gestion_est2'])
+            sgrb_id: int = int(df.at[i, 'id_gestion_res2'])
+            p_sgb: float = df.at[i, 'por_gestion2']
             fe, _ceb, _cms, _cf, _cc, _cpms, _ccms, _dpcms, ym, fge = ef_execution(at_id=at_id,
                                                                                    ca_id=ca_id,
                                                                                    coe_act_id=coe_act_id,
@@ -84,15 +108,15 @@ def masive_calc():
                                                                                    sgrb_id=5,
                                                                                    p_sgb=0.0,
                                                                                    prnt=False)
-            # print(f'FE: {fe},    Ym: {ym},   GE: {fge}  ')
-            df['fe_fermentacion_ent'][index] = fe
-            df['ym'][index] = ym
-            df['fe_gestion_est'][index] = fge
+            # df['fe_fermentacion_ent'][index] = fe
+            df.loc[i, 'fe_fermentacion_ent'] = fe
+            # df['ym'][index] = ym
+            df.loc[i, 'ym'] = ym
+            # df['fe_gestion_est'][index] = fge
+            df.loc[i, 'fe_gestion_est'] = fge
         except (IndexError, ValueError):
-            # print('Dato no disponible en la base de datos')
             pass
     update_db(df)
-    # df.to_csv('/home/alfonso/Documents/afolu/results/res.csv')
 
 
 def main():
