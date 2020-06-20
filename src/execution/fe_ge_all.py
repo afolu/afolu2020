@@ -84,15 +84,15 @@ def masive_calc():
                                                                                    sgrb_id=5,
                                                                                    p_sgb=0.0,
                                                                                    prnt=False)
-            print(f'FE: {fe},    Ym: {ym},   GE: {fge}  ')
+            # print(f'FE: {fe},    Ym: {ym},   GE: {fge}  ')
             df['fe_fermentacion_ent'][index] = fe
             df['ym'][index] = ym
             df['fe_gestion_est'][index] = fge
         except (IndexError, ValueError):
-            print('Dato no disponible en la base de datos')
+            # print('Dato no disponible en la base de datos')
             pass
     update_db(df)
-    df.to_csv('/home/alfonso/Documents/afolu/results/res.csv')
+    # df.to_csv('/home/alfonso/Documents/afolu/results/res.csv')
 
 
 def main():
