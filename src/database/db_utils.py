@@ -75,7 +75,7 @@ def get_from_ca_table(ca_id):
         query = """
         SELECT  coe_cat_animal, temp_conf, rcms, ib
         FROM categoria_animal
-        WHERE id_categoria_animal = '{0}'
+        WHERE id_categoria_animal = {0}
         """.format(ca_id)
         cur = connection.cursor()
         cur.execute(query)
@@ -84,6 +84,7 @@ def get_from_ca_table(ca_id):
         tc = res[0][1]
         rcms = res[0][2]
         bi = res[0][3]
+    conn.close()
     return a1, tc, rcms, bi
 
 
@@ -97,12 +98,13 @@ def get_from_cp_table(cp_id):
         query = """
         SELECT  coe_prenez 
         FROM coeficiente_prenez
-        WHERE id_coe_prenez = '{0}'
+        WHERE id_coe_prenez = {0}
         """.format(cp_id)
         cur = connection.cursor()
         cur.execute(query)
         res = cur.fetchall()
         cp = res[0][0]
+    conn.close()
     return cp
 
 
@@ -113,7 +115,7 @@ def get_from_grass_type(id_):
                 SELECT ed_rumiantes, energia_bruta_pasto, fdn_dieta, fda, enm_rumiantes, 
                 ceniza_dieta, pc_dieta
                 FROM variedad_pasto
-                WHERE id_variedad = '{0}'
+                WHERE id_variedad = {0}
                 """.format(id_)
         cur = connection.cursor()
         cur.execute(query)
@@ -125,6 +127,7 @@ def get_from_grass_type(id_):
         enm: float = res[0][4]
         cen: float = res[0][5]
         pcd: float = res[0][6]
+    conn.close()
     return edr, ebp, fdn, fda, enm, cen, pcd
 
 
@@ -135,7 +138,7 @@ def get_from_suplement_type(id_):
                 SELECT edt_rumiantes, energia_bruta_pasto, fdn_dieta, fda, 
                 enm_rumiantes, ceniza_dieta, pc_dieta
                 FROM suplemento
-                WHERE id_suplemento = '{0}'
+                WHERE id_suplemento = {0}
                 """.format(id_)
         cur = connection.cursor()
         cur.execute(query)
@@ -147,6 +150,7 @@ def get_from_suplement_type(id_):
         enm: float = res[0][4]
         cen: float = res[0][5]
         pcd: float = res[0][6]
+    conn.close()
     return edr, ebp, fdn, fda, enm, cen, pcd
 
 
@@ -160,12 +164,13 @@ def get_from_ac_table(ac_id):
         query = """
                 SELECT coe_actividad 
                 FROM coeficiente_actividad
-                WHERE id_coe_actividad = '{0}'
+                WHERE id_coe_actividad = {0}
                 """.format(ac_id)
         cur = connection.cursor()
         cur.execute(query)
         res = cur.fetchall()
         ca = res[0][0]
+    conn.close()
     return ca
 
 
@@ -179,12 +184,13 @@ def get_from_cs_table(id_cs):
         query = """
         SELECT coe_cond_sexual 
         FROM condicion_sexual
-        WHERE id_cond_sexual = '{0}'
+        WHERE id_cond_sexual = {0}
         """.format(id_cs)
         cur = connection.cursor()
         cur.execute(query)
         res = cur.fetchall()
         fcs = res[0][0]
+    conn.close()
     return fcs
 
 
@@ -205,6 +211,7 @@ def get_from_pm_table(pm_id):
         res = cur.fetchall()
         ap: float = res[0][0]
         bp: float = res[0][1]
+    conn.close()
     return ap, bp
 
 
@@ -225,6 +232,7 @@ def get_from_awms_table(awms_id):
         res = cur.fetchall()
         ap = res[0][0]
         bp = res[0][1]
+    conn.close()
     return ap, bp
 
 
