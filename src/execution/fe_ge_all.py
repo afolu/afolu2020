@@ -34,7 +34,6 @@ def update_db(df):
 
 def masive_calc():
     df = get_data()
-    df.dropna(how='any', inplace=True)
     for i in df.index:
         try:
             at_id: int = int(df.at[i, 'id_at'])
