@@ -104,6 +104,8 @@ MIDDLE_COLUMN = [
         [
             dcc.Loading(
                 id="table-res",
+                type='circle',
+                # type="default",
                 children=[
                     dbc.Alert(
                         "Not enough data to render this plot, please adjust the filters",
@@ -111,10 +113,9 @@ MIDDLE_COLUMN = [
                         color="warning",
                         style={"display": "none"},
                     ),
-                    dcc.Graph(id='plot-map'),
+                    dcc.Graph(id='plot-map', style=dict(aling='centered')),
                     dcc.Graph(id="plot-table"),
                 ],
-                type="default",
             )
         ],
         style={"marginTop": 0, "marginBottom": 0, 'display': 'flex'},
@@ -150,10 +151,29 @@ app.layout = html.Div(children=[NAVBAR, BODY])
 )
 def update_mpios(n_clicks, dpto):
     if dpto:
-        print(dpto)
         return get_mpio_by_dpto(dpto)
     else:
         return []
+
+
+def wait_for():
+    return dbc.CardBody(
+        [
+            dcc.Loading(
+                id="table-res",
+                children=[
+                    dbc.Alert(
+                        "Not enough data to render this plot, please adjust the filters",
+                        id="no-data-alert-bank",
+                        color="warning",
+                        style={"display": "none"},
+                    ),
+                ],
+                type="default",
+            )
+        ],
+        style={"marginTop": 0, "marginBottom": 0, 'display': 'flex'},
+    )
 
 
 @app.callback(
@@ -172,12 +192,11 @@ def update_mpios(n_clicks, dpto):
     ],
 )
 def update_query(n_clicks, year, dpto, mpio, ipcc):
-    print(year, mpio, ipcc, dpto)
     if ((year is None) or (len(year) == 0)) or ((mpio is None) or (len(mpio) == 0)) or \
             ((ipcc is None) or (len(ipcc) == 0)):
-        pass
+        raise PreventUpdate
     else:
-        df = get_act_data(year, mpio, ipcc)
+        df = get_act_data(year, dpto, mpio, ipcc)
         return get_table_fig(df, mpio)
 
 
