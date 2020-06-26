@@ -9,7 +9,7 @@ from src.database.db_utils import pg_connection_str, pg_connection
 from src.execution.ef_exe import ef_execution
 
 
-def get_data():
+def get_data() -> pd.DataFrame:
     conn = pg_connection_str()
     query = "SELECT * " \
             "FROM fe_fermentacion"
@@ -17,7 +17,7 @@ def get_data():
     return df
 
 
-def update_db(df):
+def update_db(df) -> None:
     df = df.where(pd.notnull(df), 'nan')
     zipped = zip(df.id, df.fe_fermentacion_ent, df.ym, df.fe_gestion_est)
     tp_to_str = str(tuple(zipped))
@@ -30,10 +30,12 @@ def update_db(df):
     with conn_ as connection:
         cur = connection.cursor()
         cur.execute(query_)
+    conn_.close()
 
 
 def masive_calc():
     df = get_data()
+    fails = 1
     for i in df.index:
         try:
             at_id: int = int(df.at[i, 'id_at'])
@@ -51,13 +53,13 @@ def masive_calc():
             milk: float = df.at[i, 'leche']
             grease: float = df.at[i, 'grasa']
             ht: float = df.at[i, 'ht']
-            cs_id: int = int(df.at[i, 'id_cs'])
-            sp_id: int = int(df.at[i, 'id_prod_metano'])
-            sgea_id: int = int(df.at[i, 'id_gestion_est1'])
-            sgra_id: int = int(df.at[i, 'id_gestion_res1'])
+            cs_id: int = (df.at[i, 'id_cs'])
+            sp_id: int = (df.at[i, 'id_prod_metano'])
+            sgea_id: int = (df.at[i, 'id_gestion_est1'])
+            sgra_id: int = (df.at[i, 'id_gestion_res1'])
             p_sga: float = df.at[i, 'por_gestion1']
-            sgeb_id: int = int(df.at[i, 'id_gestion_est2'])
-            sgrb_id: int = int(df.at[i, 'id_gestion_res2'])
+            sgeb_id: int = (df.at[i, 'id_gestion_est2'])
+            sgrb_id: int = (df.at[i, 'id_gestion_res2'])
             p_sgb: float = df.at[i, 'por_gestion2']
             fe, _ceb, _cms, _cf, _cc, _cpms, _ccms, _dpcms, ym, fge = ef_execution(at_id=at_id,
                                                                                    ca_id=ca_id,
@@ -86,10 +88,12 @@ def masive_calc():
             df.loc[i, 'fe_fermentacion_ent'] = fe
             df.loc[i, 'ym'] = ym
             df.loc[i, 'fe_gestion_est'] = fge
-        except (IndexError, ValueError):
+        except (IndexError, ValueError, ZeroDivisionError)as e:
+            fails += 1
             pass
     update_db(df)
     print("salida=OK")
+    print(f"error={fails}")
 
 
 def main():
