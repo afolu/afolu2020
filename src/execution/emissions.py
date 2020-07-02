@@ -37,8 +37,8 @@ def update_db(df) -> None:
 
 def calculation():
     df = get_act_data()
-    df.emision_ge = df.gen * df.numero
-    df.emision_fe = df.fe * df.numero
+    df.emision_ge = df.gen * df.numero / 1000000.0
+    df.emision_fe = df.fe * df.numero / 1000000.0
     update_db(df)
 
 
