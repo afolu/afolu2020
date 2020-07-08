@@ -193,7 +193,7 @@ class FactorEF(GrossEnergy):
         Consumo de materia seca (calculado a través del consumo de energía)
         :return: cms (kg dia-1)
         """
-        cpmtp = ((self.weight + (self.gan * 365) * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) -
+        cpmtp = (((self.weight + (self.gan * 365)) * 0.96) ** 0.75) * (((0.2435 * (self.enmf / 4.184)) -
                                                                       (0.0466 * ((self.enmf / 4.184) ** 2))
                                                                       - 0.0869) / (
                                                                              self.enmf / 4.184)) * self.bfaf_calc_tp() \
