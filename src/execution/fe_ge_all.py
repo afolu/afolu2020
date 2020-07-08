@@ -91,7 +91,6 @@ def masive_calc():
         except (IndexError, ValueError, ZeroDivisionError)as e:
             fails += 1
             pass
-    df = df.fillna("")
     update_db(df)
     rows, _cols = df.shape
     print(f"salida={rows - fails}")
