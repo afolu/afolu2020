@@ -12,6 +12,7 @@ from src.manure_management.manure_mgmt import FeGe
 def ef_execution(prnt=True, **kwargs):
     """
 
+    :param prnt: if print results is required
     :param kwargs: arguments contained in FE and GE  script
     :return: emission factor, gross energy,
     """
@@ -243,9 +244,9 @@ def main():
                  p_sgb=arg['p_sgb'],
                  )
 
-    # ef_execution(at_id=5, ca_id=3, coe_act_id=3,  ta=27.1, pf=100.0, ps=0.0, vp_id=40, vs_id=1, weight=95.0,
-    #              adult_w=493.3, cp_id=1, gan=0.2, milk=440.0, grease=3.2, ht=0.0, cs_id=2, sp_id=2, sgea_id=5,
-    #              sgra_id=1, p_sga=100, sgeb_id=5, sgrb_id=5, p_sgb=0.0)
+    # ef_execution(at_id=5, ca_id=2, coe_act_id=2,  ta=16.3, pf=100.0, ps=0.0, vp_id=102, vs_id=1, weight=110.0,
+    #              adult_w=577.5, cp_id=1, gan=0.5, milk=560, grease=3.8, ht=0.0, cs_id=2, sp_id=2, sgea_id=5,
+    #              sgra_id=5, p_sga=100, sgeb_id=5, sgrb_id=5, p_sgb=0.0)
     pass
 
 
