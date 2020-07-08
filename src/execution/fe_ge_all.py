@@ -92,7 +92,8 @@ def masive_calc():
             fails += 1
             pass
     update_db(df)
-    print("salida=OK")
+    rows, _cols = df.shape
+    print(f"salida={rows - fails}")
     print(f"error={fails}")
 
 
