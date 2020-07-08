@@ -21,6 +21,7 @@ def get_act_data():
 
 def update_db(df) -> None:
     df = df.where(pd.notnull(df), 'nan')
+    df = df.fillna("")
     zipped = zip(df.id, df.emision_fe, df.emision_ge)
     tp_to_str = str(tuple(zipped))
     update = tp_to_str[1:len(tp_to_str) - 1]
