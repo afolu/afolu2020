@@ -15,7 +15,15 @@ def get_act_data():
                 INNER JOIN fe_fermentacion_temporal as FE ON FE.id_reg = DA.id_reg_ganadera AND 
                 FE.id_at = DA.id_ani_tipo_ipcc
             """
-    df = pd.read_sql_query(query, con=pg_connection_str())
+    df_bovinos = pd.read_sql_query(query, con=pg_connection_str())
+    query_2 = "SELECT DA.id, DA.ano as año, DA.id_reg_ganadera, DA.id_ani_tipo_ipcc, DA.numero," \
+              "V.fe, V.gen FROM datos_act_bovinos_ipcc_proyectados as DA " \
+              "INNER JOIN (select id_animal_tipo_ipcc,  AVG(fe_ch4_fermentacin_enterica) as fe, " \
+              "avg(fe_ch4_gestion_estiercol) as gen from fe_otras_especies group by (id_animal_tipo_ipcc)) as V " \
+              "on V.id_animal_tipo_ipcc = DA.id_ani_tipo_ipcc "
+    df_others = pd.read_sql_query(query_2, con=pg_connection_str())
+    df = pd.concat([df_bovinos, df_others], ignore_index=True)
+    df = df.sort_values(by=['id'])
     return df
 
 
