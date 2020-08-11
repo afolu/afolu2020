@@ -59,6 +59,17 @@ def years_calc(ano_est, year_min, year_max):
     return cant
 
 
+def turns(ano_est, turno, year_min, year_max):
+    turnos = [int(ano_est + turno * i) for i in range(1000)]
+    turnos.pop(0)
+    if year_max == year_min:
+        years_range = [year_max]
+    else:
+        years_range = arange(year_min, year_max)
+    matches = set(turnos).intersection(years_range)
+    return len(matches)
+
+
 def gross_abs(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     df = get_data(esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
     df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
@@ -74,8 +85,20 @@ def gross_abs(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     print(df.head)
 
 
+def gross_emi(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+    df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
+    df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
+    df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
+    df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'], year_max=year[-1], year_min=year[0]),
+                            axis=1)
+    df['ems_BA_tot'] = df['abs_BA_year'] * df['turnos'] * df['turno']
+    df['ems_BT_tot'] = df['abs_BT_year'] * df['turnos'] * df['turno']
+    df.head()
+
+
 def main():
-    gross_abs(year=[2000, 2010], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
+    gross_abs(year=[2000], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
+    gross_emi(year=[1980, 2011], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
 
 
 if __name__ == '__main__':
