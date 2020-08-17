@@ -71,7 +71,7 @@ def turns(ano_est, turno, year_min, year_max):
     return len(matches)
 
 
-def gross_abs(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+def forest_emissions(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
     df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
     df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
@@ -96,7 +96,7 @@ def gross_abs(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
 
 
 def main():
-    gross_abs(year=[2000, 2011], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
+    forest_emissions(year=[2000, 2011], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
 
 
 if __name__ == '__main__':
