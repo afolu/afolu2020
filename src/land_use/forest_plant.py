@@ -10,6 +10,22 @@ from src.database.db_utils import pg_connection_str
 
 
 def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+    """
+    Funcion para traer la inforamcion de la base de datos corresponiente a los datos de de actividad y especie
+    para los cálculos de las absorciones y emiones del modulo de plantaciones forestales
+    :param esp: Especies para las cuales se va a hacer los cálculos  acorde con la tabla de especies
+                Ej. [69, 158] 69: Cordia alliodora, 158: Pinus patula
+    :param sub_reg: Sub region con las cuales se va a hacer los cálculos acorde con la tabla de regiones
+                Ej. [1, 3] 1: región Andina, 3: región Caribe
+    :param z_upra: Zona UPRA con las cuales se va a hacer los cálculos acorde con la tabla de zona UPRA
+                Ej. [1, 3] 1: Eje Cafetero, 3: Orinoquia
+    :param dpto: Departamento con los cuales se va a hacer los cálculos acorde con la tabla de departamentos
+                Ej. [99, 17] 99: Vichada, 17: Caldas
+    :param muni: Municipios con los cuales se va a hacer los cálculos acorde con la tabla de municipios
+                Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
+    :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
+    :return: tabla de datos correspondiente al resultado de la consulta de la base de datos
+    """
     query = """SELECT DA.id
                ,DA.id_subregion
                ,DA.id_zona_upra
@@ -45,6 +61,13 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
 
 
 def years_calc(ano_est, year):
+    """
+    Calculo del numero de años que tiene la plantacion forestal a partir del año de establecimiento y el número de años
+    para el calculo de las absorciones totales en el rango de años solicitado
+    :param ano_est: Año de establecimiento del cultivo. Ej. 2004
+    :param year: Rango de años para los cuales se quiere calcular las absorciones  Ej. [2000, 2011]
+    :return:Numero de años para los cuales la plantacion forestal genera absorciones.
+    """
     year_min, year_max = year[0], year[-1]
     if (len(year) == 1) and (year_max < ano_est):
         return 0
@@ -59,6 +82,14 @@ def years_calc(ano_est, year):
 
 
 def turns(ano_est, turno, year_min, year_max):
+    """
+    Funcion para  calcular el turno de las diferentes plantaciones forestales
+    :param ano_est: Año de establecimiento del cultivo. Ej. 2004
+    :param turno: Turno de la plantacion forestal. Ej. 20
+    :param year_min: Año menor del rango de años con los cuales se va a hacer los cálculos Ej. 2000
+    :param year_max: Año mayor del rango de años con los cuales se va a hacer los cálculos Ej. 2011
+    :return: numero de turnos que ha completado la plantacion forestal en el rango de fechas establecido
+    """
     assert year_max >= year_min, 'El rango de consulta debe ser año inferior y año superior. Por favor verificar ' \
                                  'años consultados'
     turnos = [int(ano_est + turno * i) for i in range(1000)]
@@ -72,6 +103,21 @@ def turns(ano_est, turno, year_min, year_max):
 
 
 def forest_emissions(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+    """
+    Calculo de las emisiones y absorciones brutas y netas del modulo de plantaciones forestales
+    :param year: rango de años para los cuales se va a hacer los cálculos  Ej. [2000, 2018] o [2002]
+    :param esp: Especies para las cuales se va a hacer los cálculos  acorde con la tabla de especies
+                Ej. [69, 158] 69: Cordia alliodora, 158: Pinus patula
+    :param sub_reg: Sub region con las cuales se va a hacer los cálculos acorde con la tabla de regiones
+                Ej. [1, 3] 1: región Andina, 3: región Caribe
+    :param z_upra: Zona UPRA con las cuales se va a hacer los cálculos acorde con la tabla de zona UPRA
+                Ej. [1, 3] 1: Eje Cafetero, 3: Orinoquia
+    :param dpto: Departamento con los cuales se va a hacer los cálculos acorde con la tabla de departamentos
+                Ej. [99, 17] 99: Vichada, 17: Caldas
+    :param muni: Municipios con los cuales se va a hacer los cálculos acorde con la tabla de municipios
+                Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
+    :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
+    """
     df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
     df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
     df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
@@ -96,7 +142,7 @@ def forest_emissions(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=
 
 
 def main():
-    forest_emissions(year=[2000, 2011], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
+    forest_emissions(year=[2000, 2013], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
 
 
 if __name__ == '__main__':
