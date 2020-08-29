@@ -4,6 +4,8 @@ import sys
 import os
 import pandas as pd
 from numpy import arange
+from datetime import datetime
+
 
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.database.db_utils import pg_connection_str
@@ -60,15 +62,22 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     return df
 
 
-def years_calc(ano_est, year):
+def years_calc(ano_est, year, all=False):
     """
     Calculo del numero de años que tiene la plantacion forestal a partir del año de establecimiento y el número de años
     para el calculo de las absorciones totales en el rango de años solicitado
+    :param all: Para consultar todos los años desde el año de establecimiento de la plantación forestal
     :param ano_est: Año de establecimiento del cultivo. Ej. 2004
     :param year: Rango de años para los cuales se quiere calcular las absorciones  Ej. [2000, 2011]
     :return:Numero de años para los cuales la plantacion forestal genera absorciones.
     """
-    year_min, year_max = year[0], year[-1]
+    if (len(year) == 1) and (year[0] == ano_est) and (all is True):
+        year_min = ano_est
+        year_max = datetime.today().year
+        return year_max - year_min
+    else:
+        year_min, year_max = year[0], year[-1]
+
     if (len(year) == 1) and (year_max < ano_est):
         return 0
     elif (len(year) == 1) and (year_max > ano_est):
@@ -102,7 +111,7 @@ def turns(ano_est, turno, year_min, year_max):
     return len(matches)
 
 
-def forest_emissions(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     """
     Calculo de las emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     :param year: rango de años para los cuales se va a hacer los cálculos  Ej. [2000, 2018] o [2002]
@@ -121,28 +130,39 @@ def forest_emissions(year, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=
     df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
     df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
     df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
-    df['cant'] = df['ano_establecimiento'].apply(lambda x: years_calc(x, year=year))
-    df['accum'] = - df['ano_establecimiento'] + year[0]
+    if (year[0] == 'all') or (year is None):
+        df['cant'] = df['ano_establecimiento'].apply(lambda x: years_calc(x, year=[x], all=True))
+        df['accum'] = - df['ano_establecimiento'] - 1
+
+    else:
+        df['cant'] = df['ano_establecimiento'].apply(lambda x: years_calc(x, year=year))
+        df['accum'] = - df['ano_establecimiento'] + year[0]
+
     df['accum'].loc[df['accum'] < 0] = 0
-    df['abs_BA_tot'] = - df['abs_BA_year'] * df['cant']
-    df['abs_BT_tot'] = - df['abs_BT_year'] * df['cant']
-    df['abs_BA_accum'] = - df['abs_BA_year'] * df['accum']
-    df['abs_BT_accum'] = - df['abs_BT_year'] * df['accum']
+    df['abs_BA_consulta'] = - df['abs_BA_year'] * df['cant']
+    df['abs_BT_consulta'] = - df['abs_BT_year'] * df['cant']
+    df['abs_BA_accum_con'] = - df['abs_BA_year'] * df['accum']
+    df['abs_BT_accum_con'] = - df['abs_BT_year'] * df['accum']
     df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
     df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
-    df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'], year_max=year[-1], year_min=year[0]),
-                            axis=1)
-    df['ems_BA_tot'] = df['abs_BA_year'] * df['turnos'] * df['turno']
-    df['ems_BT_tot'] = df['abs_BT_year'] * df['turnos'] * df['turno']
-    df['ems_BA_neta'] = df['abs_BA_tot'] + df['ems_BA_tot']
-    df['ems_BT_neta'] = df['abs_BT_tot'] + df['ems_BT_tot']
+    if year[0] == 'all':
+        year_max = datetime.today().year
+        df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
+                                                year_max=year_max, year_min=x['ano_establecimiento']), axis=1)
+    else:
+        df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'], year_max=year[-1],
+                                                year_min=year[0]), axis=1)
+    df['ems_BA_consulta'] = df['abs_BA_year'] * df['turnos'] * df['turno']
+    df['ems_BT_consulta'] = df['abs_BT_year'] * df['turnos'] * df['turno']
+    df['ems_BA_neta'] = df['abs_BA_consulta'] + df['ems_BA_consulta']
+    df['ems_BT_neta'] = df['abs_BT_consulta'] + df['ems_BT_consulta']
     df = df.fillna(0)
     df.to_sql('land_use_res', con=pg_connection_str(), index=False, if_exists='replace', method="multi", chunksize=5000)
     print('Done')
 
 
 def main():
-    forest_emissions(year=[2000, 2013], esp=[69, 158], sub_reg=[1, 2], z_upra=[1], dpto=[23, 17, 15])
+    forest_emissions(year=['all'], esp=[95], dpto=[25])
 
 
 if __name__ == '__main__':
