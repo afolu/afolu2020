@@ -6,7 +6,6 @@ import pandas as pd
 from numpy import arange
 from datetime import datetime
 
-
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.database.db_utils import pg_connection_str
 
@@ -55,28 +54,28 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
         dpto_query = """AND DA.cod_depto in {} """.format(str(dpto).replace('[', '(').replace(']', ')'))
         query = query + dpto_query
     if muni:
-        muni_query = """AND DA.muni in {} """.format(str(muni).replace('[', '(').replace(']', ')'))
+        muni_query = """AND DA.cod_muni in {} """.format(str(muni).replace('[', '(').replace(']', ')'))
         query = query + muni_query
 
     df = pd.read_sql_query(query, con=pg_connection_str())
     return df
 
 
-def years_calc(ano_est, year, all=False):
+def years_calc(ano_est, year, all_years=False):
     """
     Calculo del numero de años que tiene la plantacion forestal a partir del año de establecimiento y el número de años
     para el calculo de las absorciones totales en el rango de años solicitado
-    :param all: Para consultar todos los años desde el año de establecimiento de la plantación forestal
+    :param all_years: Para consultar todos los años desde el año de establecimiento de la plantación forestal
     :param ano_est: Año de establecimiento del cultivo. Ej. 2004
     :param year: Rango de años para los cuales se quiere calcular las absorciones  Ej. [2000, 2011]
     :return:Numero de años para los cuales la plantacion forestal genera absorciones.
     """
-    if (len(year) == 1) and (year[0] == ano_est) and (all is True):
+    if (len(year) == 1) and (year[0] == ano_est) and (all_years is True):
         year_min = ano_est
         year_max = datetime.today().year
         return year_max - year_min
     else:
-        year_min, year_max = year[0], year[-1]
+        year_min, year_max = min(year), max(year)
 
     if (len(year) == 1) and (year_max < ano_est):
         return 0
@@ -103,12 +102,9 @@ def turns(ano_est, turno, year_min, year_max):
                                  'años consultados'
     turnos = [int(ano_est + turno * i) for i in range(1000)]
     turnos.pop(0)
-    if year_max == year_min:
-        years_range = [year_max]
-    else:
-        years_range = arange(year_min, year_max)
+    years_range = arange(year_min, year_max + 1)
     matches = set(turnos).intersection(years_range)
-    return len(matches)
+    return len(matches), list(matches)
 
 
 def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
@@ -127,42 +123,58 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
     :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     """
+    # query = create_query(year=year, esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
+    # df = pd.read_sql_query(query, con=pg_connection_str())
     df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
-    df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
-    df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
-    if (year[0] == 'all') or (year is None):
-        df['cant'] = df['ano_establecimiento'].apply(lambda x: years_calc(x, year=[x], all=True))
-        df['accum'] = - df['ano_establecimiento'] - 1
-
-    else:
-        df['cant'] = df['ano_establecimiento'].apply(lambda x: years_calc(x, year=year))
-        df['accum'] = - df['ano_establecimiento'] + year[0]
-
-    df['accum'].loc[df['accum'] < 0] = 0
-    df['abs_BA_consulta'] = - df['abs_BA_year'] * df['cant']
-    df['abs_BT_consulta'] = - df['abs_BT_year'] * df['cant']
-    df['abs_BA_accum_con'] = - df['abs_BA_year'] * df['accum']
-    df['abs_BT_accum_con'] = - df['abs_BT_year'] * df['accum']
-    df['abs_BA_year'] = df['factor_cap_carb_ba'] * df['hectareas']
-    df['abs_BT_year'] = df['factor_cap_carb_bt'] * df['hectareas']
+    df['abs_BA'] = - df['factor_cap_carb_ba'] * df['hectareas']
+    df['abs_BT'] = - df['factor_cap_carb_bt'] * df['hectareas']
     if year[0] == 'all':
         year_max = datetime.today().year
-        df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
-                                                year_max=year_max, year_min=x['ano_establecimiento']), axis=1)
+        df['turnos'], df['matches'] = zip(*df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
+                                                                    year_max=year_max, year_min=x['ano']), axis=1))
     else:
-        df['turnos'] = df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'], year_max=year[-1],
-                                                year_min=year[0]), axis=1)
-    df['ems_BA_consulta'] = df['abs_BA_year'] * df['turnos'] * df['turno']
-    df['ems_BT_consulta'] = df['abs_BT_year'] * df['turnos'] * df['turno']
-    df['ems_BA_neta'] = df['abs_BA_consulta'] + df['ems_BA_consulta']
-    df['ems_BT_neta'] = df['abs_BT_consulta'] + df['ems_BT_consulta']
-    df = df.fillna(0)
-    df.to_sql('land_use_res', con=pg_connection_str(), index=False, if_exists='replace', method="multi", chunksize=5000)
+        df['turnos'], df['matches'] = zip(*df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
+                                                                    year_max=max(year), year_min=min(year)), axis=1))
+
+    range_years = arange(df['ano_establecimiento'].min(), max(year) + 1)
+    multi_index = [(x, y) for x in df['id_especie']. unique() for y in range_years]
+    df_ems = pd.DataFrame(data=multi_index, columns=['esp', 'year'])
+    df_ems['ems_BA'], df_ems['ems_BT'],  df_ems['ems_BA_accum'],  df_ems['ems_BT_accum'] = 0, 0, 0, 0
+    for index, row in df.iterrows():
+        if row['turnos']:
+            anos = row['matches']
+            for ano in anos:
+                ems_ba = row['factor_cap_carb_ba'] * row['hectareas'] * row['turno']
+                ems_bt = row['factor_cap_carb_bt'] * row['hectareas'] * row['turno']
+                df_ems['ems_BA'].loc[(df_ems['esp'] == row['id_especie']) & (df_ems['year'] == ano)] = ems_ba
+                df_ems['ems_BT'].loc[(df_ems['esp'] == row['id_especie']) & (df_ems['year'] == ano)] = ems_bt
+
+    floor = df_ems.index // (max(year) - df['ano_establecimiento'].min() + 1)
+
+    df_ems['ems_BA_accum'] = df_ems['ems_BA'].groupby(floor).cumsum()
+    df_ems['ems_BT_accum'] = df_ems['ems_BT'].groupby(floor).cumsum()
+    df = df.groupby(by=['ano_establecimiento', 'id_especie'])['hectareas', 'abs_BA', 'abs_BT'].sum().\
+        sort_values(by=['id_especie'], ascending=False)
+    df_ems['abs_BA'], df_ems['abs_BT'], df_ems['hectareas'] = 0, 0, 0
+    for year, especie in df.groupby(level=[0, 1]):
+        df_ems['abs_BA'].loc[(df_ems['esp'] == year[1]) & (df_ems['year'] == year[0])] = especie['abs_BA'].values
+        df_ems['abs_BT'].loc[(df_ems['esp'] == year[1]) & (df_ems['year'] == year[0])] = especie['abs_BT'].values
+        df_ems['hectareas'].loc[(df_ems['esp'] == year[1]) & (df_ems['year'] == year[0])] = \
+            especie['hectareas'].values
+    df_ems['hectareas_accum'] = df_ems['hectareas'].groupby(floor).cumsum()
+    df_ems['abs_BA_accum'] = df_ems['abs_BA'].groupby(floor).cumsum()
+    df_ems['abs_BT_accum'] = df_ems['abs_BT'].groupby(floor).cumsum()
+    df_ems['ems_BA_neta'] = df_ems['abs_BA'] + df_ems['ems_BA']
+    df_ems['ems_BT_neta'] = df_ems['abs_BT'] + df_ems['ems_BT']
+    df_ems['ems_BA_neta_accum'] = df_ems['abs_BA_accum'] + df_ems['ems_BA_accum']
+    df_ems['ems_BT_neta_accum'] = df_ems['abs_BT_accum'] + df_ems['ems_BT_accum']
+    df_ems.to_sql('3b1iii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
+                  method="multi", chunksize=5000)
     print('Done')
 
 
 def main():
-    forest_emissions(year=['all'], esp=[95], dpto=[25])
+    forest_emissions(year=[2000, 2020], sub_reg=[1])
 
 
 if __name__ == '__main__':
