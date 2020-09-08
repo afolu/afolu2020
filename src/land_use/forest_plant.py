@@ -62,11 +62,10 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None, fue=None
         muni_query = """AND DA.id_fuente in {} """.format(str(fue).replace('[', '(').replace(']', ')'))
         query = query + muni_query
     if sie:
-        muni_query = """AND DA.id_fuente in {} """.format(str(sie).replace('[', '(').replace(']', ')'))
+        muni_query = """AND DA.id_sistema_siembra in {} """.format(str(sie).replace('[', '(').replace(']', ')'))
         query = query + muni_query
 
-    df = pd.read_sql_query(query, con=pg_connection_str())
-    return df
+    return query
 
 
 def turns(ano_est, turno, year_max):
@@ -100,7 +99,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
     :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     """
-    df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni, fue=None, sie=None)
+    query = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni, fue=fue, sie=sie)
+    df = pd.read_sql_query(query, con=pg_connection_str())
     if not year:
         year_max = datetime.today().year
         range_years = arange(df['ano_establecimiento'].min(), year_max + 1)
@@ -402,13 +402,52 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
         else:
             df_ems = df_ems.loc[(df_ems['ano'] >= min(year)) & (df_ems['ano'] < max(year) + 1)]
 
+    if sie:
+        df_ems['id_sistema_siembra'] = sie[0]
+        df_ems.rename(columns=dict([('id_sistema_siembra', 'id')]), inplace=True)
+        df_zp = pd.read_sql('b_sistema_siembra', con=pg_connection_str())
+        df_ems['id'] = pd.merge(df_ems, df_zp[['id', 'nombre']], on='id')['nombre']
+        df_ems.rename(columns=dict([('id', 'Sistema_siembra')]), inplace=True)
+        cols = ['especie', 'ano', 'Sistema_siembra', 'departamento', 'hectareas', 'hectareas_accum',
+                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+                'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
+                'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
+        df_ems = df_ems[cols]
+    else:
+        df_ems['id_sistema_siembra'] = 'Todas'
+        df_ems.rename(columns=dict([('id_sistema_siembra', 'Sistema_siembra')]), inplace=True)
+        cols = ['especie', 'ano', 'Sistema_siembra', 'departamento', 'hectareas', 'hectareas_accum',
+                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+                'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
+                'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
+        df_ems = df_ems[cols]
+    if fue:
+        df_ems['id_fuente'] = fue[0]
+        df_ems.rename(columns=dict([('id_fuente', 'id')]), inplace=True)
+        df_zp = pd.read_sql('b_fuente_actividad', con=pg_connection_str())
+        df_ems['id'] = pd.merge(df_ems, df_zp[['id', 'nombre']], on='id')['nombre']
+        df_ems.rename(columns=dict([('id', 'Fuente')]), inplace=True)
+        cols = ['especie', 'ano', 'Sistema_siembra', 'Fuente', 'departamento', 'hectareas', 'hectareas_accum',
+                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+                'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
+                'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
+        df_ems = df_ems[cols]
+    else:
+        df_ems['id_fuente'] = 'Todas'
+        df_ems.rename(columns=dict([('id_fuente', 'Fuente')]), inplace=True)
+        cols = ['especie', 'ano', 'Sistema_siembra', 'Fuente', 'departamento', 'hectareas', 'hectareas_accum',
+                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+                'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
+                'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
+        df_ems = df_ems[cols]
+
     df_ems.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
                   method="multi", chunksize=5000)
     print('Done')
 
 
 def main():
-    forest_emissions(year=[1960, 2019], esp=[2])
+    forest_emissions(year=[1960, 2019], esp=[2], dpto=[99]) #,  sie=[2], fue=[3])
 
 
 if __name__ == '__main__':
