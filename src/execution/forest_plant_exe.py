@@ -9,8 +9,8 @@ from src.land_use.forest_plant import forest_emissions
 
 
 def forest_execution(**kwargs):
-    forest_emissions(year=kwargs['year'], esp=kwargs['esp'], sub_reg=kwargs['sub_reg'],
-                     z_upra=kwargs['z_upra'], dpto=kwargs['dpto'], muni=kwargs['muni'])
+    forest_emissions(year=kwargs['year'], esp=kwargs['esp'], sub_reg=kwargs['sub_reg'], fue=kwargs['fue'],
+                     z_upra=kwargs['z_upra'], dpto=kwargs['dpto'], muni=kwargs['muni'], sie=kwargs['sie'])
 
 
 def create_parser():
@@ -19,10 +19,10 @@ def create_parser():
     parser.add_argument('--esp', nargs='+', type=int, help='Lista de especies forestales a consultar')
     parser.add_argument('--sub_reg', nargs='+', type=int, help='Lista de subregiones a consultar')
     parser.add_argument('--z_upra', nargs='+', type=int, help='Lista de zonas upra a consultar')
-    parser.add_argument('--dpto', nargs='+', type=int, help='lista de departamentos a consultar')
-    parser.add_argument('--muni', nargs='+', type=int, help='lista de municipios a consultar')
-    parser.add_argument('--sie', nargs='+', type=int, help='lista de sistema de siembra')
-    parser.add_argument('--fue', nargs='+', type=int, help='lista de fuente de informacion')
+    parser.add_argument('--dpto', nargs='+', type=int, help='Lista de departamentos a consultar')
+    parser.add_argument('--muni', nargs='+', type=int, help='Lista de municipios a consultar')
+    parser.add_argument('--sie', nargs='+', type=int, help='Lista de sistema de siembra')
+    parser.add_argument('--fue', nargs='+', type=int, help='Lista de fuente de informacion')
     return parser.parse_args()
 
 
@@ -34,7 +34,9 @@ def main():
                      sub_reg=arg['sub_reg'],
                      z_upra=arg['z_upra'],
                      dpto=arg['dpto'],
-                     muni=arg['muni'])
+                     muni=arg['muni'],
+                     fue=arg['fue'],
+                     sie=arg['sie'])
 
 
 if __name__ == '__main__':
