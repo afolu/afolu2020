@@ -21,6 +21,8 @@ def create_parser():
     parser.add_argument('--z_upra', nargs='+', type=int, help='Lista de zonas upra a consultar')
     parser.add_argument('--dpto', nargs='+', type=int, help='lista de departamentos a consultar')
     parser.add_argument('--muni', nargs='+', type=int, help='lista de municipios a consultar')
+    parser.add_argument('--sie', nargs='+', type=int, help='lista de sistema de siembra')
+    parser.add_argument('--fue', nargs='+', type=int, help='lista de fuente de informacion')
     return parser.parse_args()
 
 
