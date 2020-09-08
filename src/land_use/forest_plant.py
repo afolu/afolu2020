@@ -10,7 +10,7 @@ sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '.
 from src.database.db_utils import pg_connection_str
 
 
-def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None, fue=None, sie=None):
     """
     Funcion para traer la inforamcion de la base de datos corresponiente a los datos de de actividad y especie
     para los cálculos de las absorciones y emiones del modulo de plantaciones forestales
@@ -34,6 +34,8 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
                ,DA.cod_muni
                ,DA.ano_establecimiento
                ,DA.id_especie
+               ,DA.id_sistema_siembra
+               ,DA.id_fuente
                ,ESP.turno
                ,DA.hectareas 
                ,ESP.factor_cap_carb_ba
@@ -56,6 +58,12 @@ def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
     elif muni:
         muni_query = """AND DA.cod_muni in {} """.format(str(muni).replace('[', '(').replace(']', ')'))
         query = query + muni_query
+    if fue:
+        muni_query = """AND DA.id_fuente in {} """.format(str(fue).replace('[', '(').replace(']', ')'))
+        query = query + muni_query
+    if sie:
+        muni_query = """AND DA.id_fuente in {} """.format(str(sie).replace('[', '(').replace(']', ')'))
+        query = query + muni_query
 
     df = pd.read_sql_query(query, con=pg_connection_str())
     return df
@@ -76,7 +84,7 @@ def turns(ano_est, turno, year_max):
     return len(matches), list(matches)
 
 
-def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None):
+def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None, fue=None, sie=None):
     """
     Calculo de las emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     :param year: rango de años para los cuales se va a hacer los cálculos  Ej. [2000, 2018] o [2002]
@@ -92,17 +100,22 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
     :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     """
-    df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni)
+    df = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni, fue=None, sie=None)
     if not year:
         year_max = datetime.today().year
         range_years = arange(df['ano_establecimiento'].min(), year_max + 1)
         df['turnos'], df['matches'] = zip(*df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
                                                                     year_max=year_max),  axis=1))
-    else:
+    try:
         year_max = max(year)
+        if not df['ano_establecimiento'].min():
+            return print('No Data')
         df['turnos'], df['matches'] = zip(*df.apply(lambda x: turns(x['ano_establecimiento'], x['turno'],
                                                                     year_max=year_max), axis=1))
         range_years = arange(df['ano_establecimiento'].min(), max(year) + 1)
+    except ValueError:
+        print('No Data')
+        return 0
     if sub_reg:
         multi_index = [(x, y, z) for x in df['id_especie'].unique() for y in range_years for z in df['id_subregion'].unique()]
         df_ems = pd.DataFrame(data=multi_index, columns=['id_especie', 'ano', 'id_subregion'])
@@ -371,6 +384,18 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     'ems_BA_neta_accum', 'ems_BT_neta_accum']
             df_ems = df_ems[cols]
 
+    if esp:
+        if (not sub_reg) & (not z_upra) & (not dpto) & (not muni):
+            df_ems = df_ems.groupby(by=['ano'], as_index=False)['hectareas', 'hectareas_accum', 'abs_BA_accum',
+                                                                'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum',
+                                                                'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
+                                                                'ems_BA_neta_accum', 'ems_BT_neta_accum'].sum()
+            df_ems['especie'], df_ems['region'], = 'Todas', 'Todas'
+            cols = ['ano', 'especie', 'region', 'hectareas', 'hectareas_accum', 'abs_BA_accum', 'abs_BT_accum',
+                    'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
+                    'ems_BA_neta_accum', 'ems_BT_neta_accum']
+            df_ems = df_ems[cols]
+
     if year:
         if len(year) == 1:
             df_ems = df_ems.loc[(df_ems['ano'] >= min(year)) & (df_ems['ano'] < min(year) + 1)]
@@ -383,7 +408,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(year=[2010, 2000], dpto=[99])
+    forest_emissions(year=[1960, 2019], esp=[2])
 
 
 if __name__ == '__main__':
