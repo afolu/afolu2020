@@ -2,9 +2,14 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import warnings
 import pandas as pd
 from numpy import arange
 from datetime import datetime
+from pandas.core.common import SettingWithCopyWarning
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=SettingWithCopyWarning)
+
 
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.database.db_utils import pg_connection_str
@@ -385,17 +390,32 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_ems = df_ems[cols]
 
     if esp:
-        if (not sub_reg) & (not z_upra) & (not dpto) & (not muni):
+        if len(esp) != 1:
+            if (not sub_reg) & (not z_upra) & (not dpto) & (not muni):
+                df_ems = df_ems.groupby(by=['ano'], as_index=False)['hectareas', 'hectareas_accum', 'abs_BA_accum',
+                                                                    'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum',
+                                                                    'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
+                                                                    'ems_BA_neta_accum', 'ems_BT_neta_accum'].sum()
+                df_ems['especie'], df_ems['region'], = 'Todas', 'Todas'
+                cols = ['ano', 'especie', 'region', 'hectareas', 'hectareas_accum', 'abs_BA_accum', 'abs_BT_accum',
+                        'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
+                        'ems_BA_neta_accum', 'ems_BT_neta_accum']
+                df_ems = df_ems[cols]
+        else:
             df_ems = df_ems.groupby(by=['ano'], as_index=False)['hectareas', 'hectareas_accum', 'abs_BA_accum',
                                                                 'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum',
                                                                 'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
                                                                 'ems_BA_neta_accum', 'ems_BT_neta_accum'].sum()
-            df_ems['especie'], df_ems['region'], = 'Todas', 'Todas'
+            df_ems['region'] = 'Todas'
+            df_ems['id_especie'] = esp[0]
+            df_esp = pd.read_sql('b_especie', con=pg_connection_str())
+            df_ems.rename(columns=dict([('id_especie', 'id')]), inplace=True)
+            df_ems['id'] = pd.merge(df_ems, df_esp[['id', 'nombre']], on='id')['nombre']
+            df_ems.rename(columns=dict([('id', 'especie')]), inplace=True)
             cols = ['ano', 'especie', 'region', 'hectareas', 'hectareas_accum', 'abs_BA_accum', 'abs_BT_accum',
                     'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum', 'ems_BA_neta', 'ems_BT_neta',
                     'ems_BA_neta_accum', 'ems_BT_neta_accum']
             df_ems = df_ems[cols]
-
     if year:
         if len(year) == 1:
             df_ems = df_ems.loc[(df_ems['ano'] >= min(year)) & (df_ems['ano'] < min(year) + 1)]
@@ -416,8 +436,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
     else:
         df_ems['id_sistema_siembra'] = 'Todas'
         df_ems.rename(columns=dict([('id_sistema_siembra', 'Sistema_siembra')]), inplace=True)
-        cols = ['especie', 'ano', 'Sistema_siembra', 'departamento', 'hectareas', 'hectareas_accum',
-                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+        cols = ['especie', 'ano', 'Sistema_siembra', 'hectareas', 'hectareas_accum',
+                'abs_BA_accum',
                 'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
                 'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
         df_ems = df_ems[cols]
@@ -428,15 +448,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
         df_ems['id'] = pd.merge(df_ems, df_zp[['id', 'nombre']], on='id')['nombre']
         df_ems.rename(columns=dict([('id', 'Fuente')]), inplace=True)
         cols = ['especie', 'ano', 'Sistema_siembra', 'Fuente', 'departamento', 'hectareas', 'hectareas_accum',
-                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+                'abs_BA_accum',
                 'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
                 'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
         df_ems = df_ems[cols]
     else:
         df_ems['id_fuente'] = 'Todas'
         df_ems.rename(columns=dict([('id_fuente', 'Fuente')]), inplace=True)
-        cols = ['especie', 'ano', 'Sistema_siembra', 'Fuente', 'departamento', 'hectareas', 'hectareas_accum',
-                'turno', 'factor_cap_carb_ba', 'factor_cap_carb_bt', 'abs_BA_accum',
+        cols = ['especie', 'ano', 'Sistema_siembra', 'Fuente', 'hectareas', 'hectareas_accum',
+                'abs_BA_accum',
                 'abs_BT_accum', 'ems_BA', 'ems_BT', 'ems_BA_accum', 'ems_BT_accum',
                 'ems_BA_neta', 'ems_BT_neta', 'ems_BA_neta_accum', 'ems_BT_neta_accum']
         df_ems = df_ems[cols]
@@ -447,7 +467,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(year=[1960, 2019], esp=[2], dpto=[99]) #,  sie=[2], fue=[3])
+    forest_emissions(year=[2015], esp=[2], dpto=[99])
 
 
 if __name__ == '__main__':
