@@ -249,7 +249,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             df_esp = pd.read_sql('b_especie', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
-            df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
+            df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
             df_tot.rename(columns=dict([('id', 'id_especie')]), inplace=True)
 
             df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
@@ -315,11 +315,11 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
-                df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
+                df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
                 df_tot.rename(columns=dict([('id', 'id_especie')]), inplace=True)
                 df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
-                df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id')['nombre']
+                df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
                 df_tot.rename(columns=dict([('id', 'id_subregion')]), inplace=True)
                 df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
                               method="multi", chunksize=5000)
@@ -495,19 +495,19 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
-                    df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
+                    df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
                     df_tot.rename(columns=dict([('id', 'id_especie')]), inplace=True)
                     df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
-                    df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id')['nombre']
+                    df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
                     df_tot.rename(columns=dict([('id', 'id_subregion')]), inplace=True)
                     df_fue = pd.read_sql('b_fuente_actividad', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_fuente', 'id')]), inplace=True)
-                    df_tot['id'] = pd.merge(df_tot, df_fue[['id', 'nombre']], on='id')['nombre']
+                    df_tot['id'] = pd.merge(df_tot, df_fue[['id', 'nombre']], on='id', how='left')['nombre']
                     df_tot.rename(columns=dict([('id', 'id_fuente')]), inplace=True)
                     df_sie = pd.read_sql('b_sistema_siembra', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_sistema_siembra', 'id')]), inplace=True)
-                    df_tot['id'] = pd.merge(df_tot, df_sie[['id', 'nombre']], on='id')['nombre']
+                    df_tot['id'] = pd.merge(df_tot, df_sie[['id', 'nombre']], on='id', how='left')['nombre']
                     df_tot.rename(columns=dict([('id', 'id_sistema_siembra')]), inplace=True)
                     df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
                                   method="multi", chunksize=5000)
@@ -583,15 +583,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
-                df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
+                df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
                 df_tot.rename(columns=dict([('id', 'id_especie')]), inplace=True)
                 df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
-                df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id')['nombre']
+                df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
                 df_tot.rename(columns=dict([('id', 'id_subregion')]), inplace=True)
                 df_sie = pd.read_sql('b_sistema_siembra', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_sistema_siembra', 'id')]), inplace=True)
-                df_tot['id'] = pd.merge(df_tot, df_sie[['id', 'nombre']], on='id')['nombre']
+                df_tot['id'] = pd.merge(df_tot, df_sie[['id', 'nombre']], on='id', how='left')['nombre']
                 df_tot.rename(columns=dict([('id', 'id_sistema_siembra')]), inplace=True)
                 df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
                               method="multi", chunksize=5000)
