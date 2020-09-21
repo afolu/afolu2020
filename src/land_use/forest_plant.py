@@ -227,7 +227,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                            ['abs_bt']] = row.abs_bt
                 df_tot.loc[lambda x: ((x['anio'] == row.ano_establecimiento) & (x['id_especie'] == row.id_especie)),
                            ['hectareas']] = row.hectareas
-            df_tot = df_tot.sort_values(by=['id_especie']).reset_index()
+            df_tot = df_tot.sort_values(by=['id_especie', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
@@ -2607,7 +2607,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(sie=[1])
+    forest_emissions(year=[2019,2010], esp=[2])
 
 
 if __name__ == '__main__':
