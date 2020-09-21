@@ -4,12 +4,11 @@ import sys
 import os
 import warnings
 import pandas as pd
-from numpy import arange
+from numpy import arange, VisibleDeprecationWarning
 from datetime import datetime
-from pandas.core.common import SettingWithCopyWarning
 
 warnings.filterwarnings("ignore", category=FutureWarning)
-warnings.filterwarnings("ignore", category=SettingWithCopyWarning)
+warnings.filterwarnings("ignore", category=VisibleDeprecationWarning)
 
 sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '../../../'))}")
 from src.database.db_utils import pg_connection_str
