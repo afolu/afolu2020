@@ -6,6 +6,7 @@ import warnings
 import pandas as pd
 from numpy import arange, VisibleDeprecationWarning
 from datetime import datetime
+from collections import Counter
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=VisibleDeprecationWarning)
@@ -191,6 +192,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
     if esp:
         if (not sub_reg) & (not z_upra) & (not dpto) & (not muni) & (not fue) & (not sie):
+            df = df[df['ano_establecimiento'] == 1988]
             matches = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
                                      'turno'])['matches'].sum()
             df_ems = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
@@ -200,7 +202,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -213,7 +215,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                     'turno'], as_index=False)['hectareas'].sum()
             df_abs['abs_ba'] = df_abs['factor_cap_carb_ba'] * df_abs['hectareas']
             df_abs['abs_bt'] = df_abs['factor_cap_carb_bt'] * df_abs['hectareas']
-            df_abs = df_abs.groupby(by=['ano_establecimiento', 'id_especie'],
+            df_abs = df_abs.groupby(by=['id_especie', 'ano_establecimiento'],
                                     as_index=False)['hectareas', 'abs_ba', 'abs_bt'].sum().sort_values(
                 by=['id_especie'])
             df_tot['abs_ba'] = 0
@@ -2607,7 +2609,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(year=[2019,2010], esp=[2])
+    forest_emissions(year=[2012], esp=[95])
 
 
 if __name__ == '__main__':
