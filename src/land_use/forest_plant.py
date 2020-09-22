@@ -192,7 +192,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
     if esp:
         if (not sub_reg) & (not z_upra) & (not dpto) & (not muni) & (not fue) & (not sie):
-            df = df[df['ano_establecimiento'] == 1988]
+            # df = df[df['ano_establecimiento'] == 1988]
             matches = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
                                      'turno'])['matches'].sum()
             df_ems = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
@@ -2609,7 +2609,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(year=[2012], esp=[95])
+    forest_emissions(year=[2012], esp=[2])
 
 
 if __name__ == '__main__':
