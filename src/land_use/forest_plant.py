@@ -144,7 +144,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                       df['ano_establecimiento'].max())], columns=['anio'])
         df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
         for row in df_ems.itertuples():
-            anos = getattr(row, 'matches')
+            anos = set(getattr(row, 'matches'))
             for ano in anos:
                 ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                 ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -202,7 +202,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = set(getattr(row, 'matches'))
+                anos = set(set(getattr(row, 'matches')))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -270,7 +270,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'id_subregion'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -340,7 +340,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'id_subregion', 'id_fuente'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -432,7 +432,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                               'id_sistema_siembra'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -527,7 +527,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'id_subregion', 'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -611,7 +611,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_depto'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -682,7 +682,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_depto', 'id_fuente'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -776,7 +776,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                               'id_sistema_siembra'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -871,7 +871,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_depto', 'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -955,7 +955,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_muni'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1025,7 +1025,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_muni', 'id_fuente'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -1113,7 +1113,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                               'id_sistema_siembra'])
                     df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                     for row in df_ems.itertuples():
-                        anos = getattr(row, 'matches')
+                        anos = set(getattr(row, 'matches'))
                         for ano in anos:
                             ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row,
                                                                                                               'turno')
@@ -1208,7 +1208,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'cod_muni', 'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1292,7 +1292,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['id_fuente', 'anio', 'id_especie'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1365,7 +1365,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                           'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1447,7 +1447,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_especie', 'anio', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1519,7 +1519,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_subregion', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1587,7 +1587,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['anio', 'id_subregion', 'id_fuente'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1663,7 +1663,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                           'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1743,7 +1743,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['anio', 'id_subregion', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1821,7 +1821,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['cod_depto', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1889,7 +1889,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['anio', 'cod_depto', 'id_fuente'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -1962,7 +1962,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                           'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2042,7 +2042,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['anio', 'cod_depto', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2117,7 +2117,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['cod_muni', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2184,7 +2184,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = pd.DataFrame(data=data, columns=['anio', 'cod_muni', 'id_fuente'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2257,7 +2257,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                           'id_sistema_siembra'])
                 df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
                 for row in df_ems.itertuples():
-                    anos = getattr(row, 'matches')
+                    anos = set(getattr(row, 'matches'))
                     for ano in anos:
                         ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                         ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2337,7 +2337,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['anio', 'cod_muni', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2412,7 +2412,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_fuente', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2478,7 +2478,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['anio', 'id_fuente', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
@@ -2549,7 +2549,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = pd.DataFrame(data=data, columns=['id_sistema_siembra', 'anio'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
             for row in df_ems.itertuples():
-                anos = getattr(row, 'matches')
+                anos = set(getattr(row, 'matches'))
                 for ano in anos:
                     ems_ba = getattr(row, 'factor_cap_carb_ba') * getattr(row, 'hectareas') * getattr(row, 'turno')
                     ems_bt = getattr(row, 'factor_cap_carb_bt') * getattr(row, 'hectareas') * getattr(row, 'turno')
