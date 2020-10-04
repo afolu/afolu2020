@@ -6,7 +6,6 @@ import warnings
 import pandas as pd
 from numpy import arange, VisibleDeprecationWarning
 from datetime import datetime
-from collections import Counter
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=VisibleDeprecationWarning)
@@ -167,6 +166,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot.loc[lambda x: (x['anio'] == row.ano_establecimiento), ['abs_bt']] = row.abs_bt
 
         df_tot['ha_acc'] = df_tot['hectareas'].cumsum()
+        df_tot['abs_ba'] = df_tot['abs_ba'].cumsum()
+        df_tot['abs_bt'] = df_tot['abs_bt'].cumsum()
         df_tot['abs_ba_acc'] = df_tot['abs_ba'].cumsum()
         df_tot['abs_bt_acc'] = df_tot['abs_bt'].cumsum()
         df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -192,7 +193,6 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
     if esp:
         if (not sub_reg) & (not z_upra) & (not dpto) & (not muni) & (not fue) & (not sie):
-            # df = df[df['ano_establecimiento'] == 1988]
             matches = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
                                      'turno'])['matches'].sum()
             df_ems = df.groupby(by=['ano_establecimiento', 'id_especie', 'factor_cap_carb_ba', 'factor_cap_carb_bt',
@@ -232,6 +232,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_especie', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -251,7 +253,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             df_esp = pd.read_sql('b_especie', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
-            df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
+            df_tot['id'] = pd.merge(df_tot, df_esp, on='id', how='left')['nombre']
             df_tot.rename(columns=dict([('id', 'id_especie')]), inplace=True)
 
             df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
@@ -299,6 +301,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['id_especie', 'id_subregion', 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -381,6 +385,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot.drop(columns=['index'], inplace=True, axis=1)
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum().values
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum().values
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum().values
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -479,6 +485,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                     'id_sistema_siembra']).reset_index()
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -568,6 +576,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -641,6 +651,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['id_especie', 'cod_depto', 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -722,6 +734,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot = df_tot.sort_values(by=['id_especie', 'cod_depto', 'id_fuente', 'anio']).reset_index()
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -823,6 +837,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                     'anio']).reset_index()
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -912,6 +928,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -984,6 +1002,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['id_especie', 'cod_muni', 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1065,6 +1085,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     df_tot = df_tot.sort_values(by=['id_especie', 'cod_muni', 'id_fuente', 'anio']).reset_index()
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1160,6 +1182,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                     'anio']).reset_index()
                     floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                     df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                    df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                    df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                     df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                     df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1249,6 +1273,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1321,6 +1347,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['id_especie', 'id_fuente', 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1405,6 +1433,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                                                 'anio']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1479,6 +1509,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_especie', 'id_sistema_siembra', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1548,6 +1580,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_subregion', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1621,6 +1655,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot.drop(columns=['index'], inplace=True, axis=1)
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum().values
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum().values
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum().values
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1701,6 +1737,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['id_subregion', 'id_fuente', 'id_sistema_siembra']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1781,6 +1819,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_subregion', 'id_sistema_siembra', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -1851,6 +1891,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
             df_tot['ems_bt_net'] = - df_tot['abs_bt'] + df_tot['ems_bt']
@@ -1920,6 +1962,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot.drop(columns=['index'], inplace=True, axis=1)
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum().values
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum().values
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum().values
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2000,6 +2044,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['cod_depto', 'id_fuente', 'id_sistema_siembra']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2077,6 +2123,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['cod_depto', 'id_sistema_siembra', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2146,6 +2194,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['cod_muni', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2215,6 +2265,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot.drop(columns=['index'], inplace=True, axis=1)
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum().values
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum().values
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum().values
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2295,6 +2347,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot = df_tot.sort_values(by=['cod_muni', 'id_fuente', 'id_sistema_siembra']).reset_index()
                 floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
                 df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+                df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+                df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
                 df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
                 df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2372,6 +2426,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['cod_muni', 'id_sistema_siembra', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2441,6 +2497,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_fuente', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2473,7 +2531,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_ems = df.groupby(by=['ano_establecimiento', 'id_fuente', 'id_sistema_siembra', 'factor_cap_carb_ba',
                                     'factor_cap_carb_bt', 'turno'], as_index=False)['hectareas'].sum()
             df_ems['matches'] = matches.values
-            data = [(y, w, t) for y in range_years  for w in
+            data = [(y, w, t) for y in range_years for w in
                     df['id_fuente'].unique() for t in df['id_sistema_siembra'].unique()]
             df_tot = pd.DataFrame(data=data, columns=['anio', 'id_fuente', 'id_sistema_siembra'])
             df_tot['ems_ba'], df_tot['ems_bt'] = 0, 0
@@ -2510,6 +2568,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_fuente', 'id_sistema_siembra']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2581,6 +2641,8 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot = df_tot.sort_values(by=['id_sistema_siembra', 'anio']).reset_index()
             floor = df_tot.index // (year_max - df['ano_establecimiento'].min() + 1)
             df_tot['ha_acc'] = df_tot['hectareas'].groupby(floor).cumsum()
+            df_tot['abs_ba'] = df_tot['abs_ba'].groupby(floor).cumsum()
+            df_tot['abs_bt'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['abs_ba_acc'] = df_tot['abs_ba'].groupby(floor).cumsum()
             df_tot['abs_bt_acc'] = df_tot['abs_bt'].groupby(floor).cumsum()
             df_tot['ems_ba_net'] = - df_tot['abs_ba'] + df_tot['ems_ba']
@@ -2609,7 +2671,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions(year=[2012], esp=[2])
+    forest_emissions()
 
 
 if __name__ == '__main__':
