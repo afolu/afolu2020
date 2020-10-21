@@ -14,7 +14,7 @@ sys.path.insert(0, f"{os.path.abspath(os.path.join(os.path.abspath(__file__), '.
 from src.database.db_utils import pg_connection_str
 
 
-def get_data(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None, fue=None, sie=None):
+def get_query_plan(esp=None, sub_reg=None, z_upra=None, dpto=None, muni=None, fue=None, sie=None):
     """
     Funcion para traer la inforamcion de la base de datos corresponiente a los datos de de actividad y especie
     para los cálculos de las absorciones y emiones del modulo de plantaciones forestales
@@ -107,7 +107,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 Ej. [5001, 13838] 5001: Medellin, 17: Turbaná
     :return: Tabla con calulos de emisiones y absorciones brutas y netas del modulo de plantaciones forestales
     """
-    query = get_data(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni, fue=fue, sie=sie)
+    query = get_query_plan(esp=esp, sub_reg=sub_reg, z_upra=z_upra, dpto=dpto, muni=muni, fue=fue, sie=sie)
     df = pd.read_sql_query(query, con=pg_connection_str())
     if not year:
         try:
@@ -179,13 +179,12 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
         cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                 'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-        df_tot = df_tot[cols]
         if year:
             if len(year) == 1:
-                df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
             else:
-                df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
-
+                df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
+        df_tot = df_tot[cols]
         df_tot.to_sql('3b1aiii_resultados', con=pg_connection_str(), index=False, if_exists='replace',
                       method="multi", chunksize=5000)
         print('Done')
@@ -244,13 +243,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_esp = pd.read_sql('b_especie', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_esp, on='id', how='left')['nombre']
@@ -312,13 +311,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -397,13 +398,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                             'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -496,13 +499,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                             'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -586,13 +591,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -662,13 +669,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -745,13 +754,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -847,13 +858,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -938,13 +951,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1013,13 +1028,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1096,13 +1113,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1192,13 +1211,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                     cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                             'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net',
                             'ems_bt_net']
-                    df_tot = df_tot[cols]
                     if year:
                         if len(year) == 1:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 min(year) + 1)].reset_index()
                         else:
-                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                            df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                                 max(year) + 1)].reset_index()
 
+                    df_tot = df_tot[cols]
                     df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                     df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                     df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1283,13 +1304,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
@@ -1358,13 +1381,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id')['nombre']
@@ -1443,13 +1468,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_esp = pd.read_sql('b_especie', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1520,13 +1547,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_esp = pd.read_sql('b_especie', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_especie', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_esp[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1592,13 +1619,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1666,13 +1693,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1746,13 +1775,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot['id_especie'] = 'Todas'
                 cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
                 df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
                 df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1830,13 +1861,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                         min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                         max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_reg = pd.read_sql('b_subregion', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_subregion', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_reg[['id', 'nombre']], on='id', how='left')['nombre']
@@ -1902,13 +1935,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_dpto = pd.read_sql('departamento', con=pg_connection_str())
             df_tot.rename(columns=dict([('cod_depto', 'codigo')]), inplace=True)
             df_tot['codigo'] = pd.merge(df_tot, df_dpto[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -1973,13 +2006,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_dpto = pd.read_sql('departamento', con=pg_connection_str())
                 df_tot.rename(columns=dict([('cod_depto', 'codigo')]), inplace=True)
                 df_tot['codigo'] = pd.merge(df_tot, df_dpto[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2053,13 +2088,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot['id_especie'] = 'Todas'
                 cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_dpto = pd.read_sql('departamento', con=pg_connection_str())
                 df_tot.rename(columns=dict([('cod_depto', 'codigo')]), inplace=True)
                 df_tot['codigo'] = pd.merge(df_tot, df_dpto[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2134,13 +2171,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'cod_depto', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_dpto = pd.read_sql('departamento', con=pg_connection_str())
             df_tot.rename(columns=dict([('cod_depto', 'codigo')]), inplace=True)
             df_tot['codigo'] = pd.merge(df_tot, df_dpto[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2206,13 +2243,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_muni = pd.read_sql('municipio', con=pg_connection_str())
             df_tot.rename(columns=dict([('cod_muni', 'codigo')]), inplace=True)
             df_tot['codigo'] = pd.merge(df_tot, df_muni[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2276,13 +2313,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
                 cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_muni = pd.read_sql('municipio', con=pg_connection_str())
                 df_tot.rename(columns=dict([('cod_muni', 'codigo')]), inplace=True)
                 df_tot['codigo'] = pd.merge(df_tot, df_muni[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2356,13 +2395,15 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
                 df_tot['id_especie'] = 'Todas'
                 cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                         'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-                df_tot = df_tot[cols]
                 if year:
                     if len(year) == 1:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             min(year) + 1)].reset_index()
                     else:
-                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                        df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] <
+                                                                             max(year) + 1)].reset_index()
 
+                df_tot = df_tot[cols]
                 df_muni = pd.read_sql('municipio', con=pg_connection_str())
                 df_tot.rename(columns=dict([('cod_muni', 'codigo')]), inplace=True)
                 df_tot['codigo'] = pd.merge(df_tot, df_muni[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2437,13 +2478,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'cod_muni', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_muni = pd.read_sql('municipio', con=pg_connection_str())
             df_tot.rename(columns=dict([('cod_muni', 'codigo')]), inplace=True)
             df_tot['codigo'] = pd.merge(df_tot, df_muni[['codigo', 'nombre']], on='codigo', how='left')['nombre']
@@ -2509,13 +2550,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_fue = pd.read_sql('b_fuente_actividad', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_fuente', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_fue[['id', 'nombre']], on='id', how='left')['nombre']
@@ -2578,13 +2619,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
             df_tot['id_region'] = 'Todas'
             cols = ['id_especie', 'id_region', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_fue = pd.read_sql('b_fuente_actividad', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_fuente', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_fue[['id', 'nombre']], on='id', how='left')['nombre']
@@ -2653,13 +2694,13 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
             cols = ['id_especie', 'id_subregion', 'id_fuente', 'id_sistema_siembra', 'anio', 'hectareas', 'ha_acc',
                     'abs_ba', 'abs_bt', 'abs_ba_acc', 'abs_bt_acc', 'ems_ba', 'ems_bt', 'ems_ba_net', 'ems_bt_net']
-            df_tot = df_tot[cols]
             if year:
                 if len(year) == 1:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < min(year) + 1)].reset_index()
                 else:
-                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)]
+                    df_tot = df_tot.loc[(df_tot['anio'] >= min(year)) & (df_tot['anio'] < max(year) + 1)].reset_index()
 
+            df_tot = df_tot[cols]
             df_sie = pd.read_sql('b_sistema_siembra', con=pg_connection_str())
             df_tot.rename(columns=dict([('id_sistema_siembra', 'id')]), inplace=True)
             df_tot['id'] = pd.merge(df_tot, df_sie[['id', 'nombre']], on='id', how='left')['nombre']
@@ -2671,7 +2712,7 @@ def forest_emissions(year=None, esp=None, sub_reg=None, z_upra=None, dpto=None, 
 
 
 def main():
-    forest_emissions()
+    forest_emissions(dpto=[81, 50, 85, 99], year=[1990, 2019])
 
 
 if __name__ == '__main__':
