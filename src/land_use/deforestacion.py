@@ -33,14 +33,16 @@ def get_query_da(id_bioma=None, year=None):
             year_query = """AND ano in {} """.format(str(year).replace('[', '(').replace(']', ')'))
             query = query + year_query
         if len(year) != 1:
-            year_query = """AND ano BETWEEN {} AND {}""".format(str(year[0]).replace('[', '(').replace(']', ')'),
-                                                                str(year[-1]).replace('[', '(').replace(']', ')'))
+            year_query = """AND ano BETWEEN {} AND {}""".format(str(min(year)).replace('[', '(').replace(']', ')'),
+                                                                str(max(year)).replace('[', '(').replace(']', ')'))
             query = query + year_query
     return query
 
 
-def deforestacion(id_bioma=None, year=None,  id_type=1, id_report=1):
+def deforestacion(id_bioma=None, year=None, id_type=1, id_report=1):
     df = pd.read_sql_query(get_query_da(id_bioma=id_bioma, year=year), con=pg_connection_str())
+    if df.empty:
+        raise ValueError('Esta consulta no tiene datos')
     df.rename(columns=dict([('id', 'idx')]), inplace=True)
     df_subcat = pd.read_sql('deforestacion_subcategorias_ipcc', con=pg_connection_str())
     df_subcat.rename(columns=dict([('nombre', 'nombre_id'), ('id_datos_actividad', 'nombre')]), inplace=True)
@@ -87,11 +89,11 @@ def deforestacion(id_bioma=None, year=None,  id_type=1, id_report=1):
 
     df_res = df.groupby(by=['id_bioma', 'ano', 'subcat_ipcc_number'],
                         as_index=False)[['tipif_ha_hist', 'tipif_ha_proy',
-                                        'em_bruta_bnat_hist', 'cont_rema_bnat_hist', 'emi_neta_bnat_hist',
-                                        'em_bruta_mom_hist', 'cont_rema_mom_hist', 'emi_neta_mom_hist',
-                                        'em_bruta_bnat_nref', 'cont_rema_bnat_nref', 'emi_neta_bnat_nref',
-                                        'em_bruta_mom_nref', 'cont_rema_mom_nref', 'emi_neta_mom_nref'
-                                        ]].sum().reset_index()
+                                         'em_bruta_bnat_hist', 'cont_rema_bnat_hist', 'emi_neta_bnat_hist',
+                                         'em_bruta_mom_hist', 'cont_rema_mom_hist', 'emi_neta_mom_hist',
+                                         'em_bruta_bnat_nref', 'cont_rema_bnat_nref', 'emi_neta_bnat_nref',
+                                         'em_bruta_mom_nref', 'cont_rema_mom_nref', 'emi_neta_mom_nref'
+                                         ]].sum().reset_index()
 
     df_res = df_res.sort_values(by=['id_bioma', 'subcat_ipcc_number', 'ano'])
     df_res = pd.merge(df_res, df_subcat[['subcat_ipcc_number', 'subcat_ipcc']].drop_duplicates(),
@@ -118,7 +120,7 @@ def deforestacion(id_bioma=None, year=None,  id_type=1, id_report=1):
         df_res = df_res['emi_neta_mom_nref'].reset_index()
     elif (id_type == 3) and (id_report == 6):
         df_res = df_res['em_bruta_mom_nref'].reset_index()
-    else:                                     # Otros filtros por aplicar
+    else:  # Otros filtros por aplicar
         df_res = df_res['tipif_ha_hist'].reset_index()
         print('Estos filtros aun no han sido aplicados, datos desplegados son de Actividad')
 
@@ -135,7 +137,7 @@ def deforestacion(id_bioma=None, year=None,  id_type=1, id_report=1):
 
 
 def main():
-    deforestacion(id_bioma=[2, 3, 4], id_type=2, id_report=6)
+    deforestacion(id_bioma=[1], year=[2019, 1960], id_type=2, id_report=1)
 
 
 if __name__ == '__main__':
